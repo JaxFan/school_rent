@@ -1,0 +1,40 @@
+<div class="review_listBox" empty="$empty">
+    {volist name="commentList" id="item"}
+    <div class="review_list clearfix">
+        <div class="review_userHead fl">
+            <div class="review_user ">
+                <div class="toutou">
+                    <img src="/uploads/{$item.user_id|getUserAvatar}" alt="" class="tou">
+                </div>
+                <p>{$item.user_id|getUserName}</p>
+            </div>
+        </div>
+        <div class="review_cont">
+            <div class="review_t clearfix">
+                <div class="starBox fl">
+                    {for start="1" end="4"}
+                    {if $i <= $item.comment_level}
+                    <span class="star"> <i class="fa fa-star" aria-hidden="true"></i></span>
+                    {else /}
+                    <span class="star-gray"> <i class="fa fa-star" aria-hidden="true"></i></span>
+                    {/if}
+                    {/for}
+                </div>
+                <span class="star_text fl">
+                    {switch $item.comment_level }
+                        {case 3 }
+                        <span class="text-success">满意</span>
+                        {/case}
+                        {case 2}
+                        <span class="text-warning">一般</span>
+                        {/case}
+                        {default /}
+                        <span class="text-danger">不满意</span>
+                    {/switch}
+                </span>
+            </div>
+            <p>{$item.content}</p>
+        </div>
+    </div>
+    {/volist}
+</div>

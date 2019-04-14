@@ -1,0 +1,310 @@
+{layout name='public:layout'}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success bg-success" style="padding: 10px;">用户信息表</h3>
+
+<div id="userInfoTable">
+    <div class="gerentouxiang">
+        <img src="/uploads/{$userInfo.avatar}" class="touxiang">
+    </div>
+    <div class="xiazi">
+        <table class="table table-hover table-bordered">
+            <tr>
+                <td><strong>昵称：</strong></td>
+                <td>{$userInfo.name}</td>
+            </tr>
+            <tr>
+                <td><strong>签名：</strong></td>
+                <td>{$userInfo.short_intrduce}</td>
+            </tr>
+            <tr>
+                <td><strong>电话：</strong></td>
+                <td>{$userInfo.mobile}</td>
+            </tr>
+            <tr>
+                <td><strong>地址：</strong></td>
+                <td>{$userInfo.address}</td>
+            </tr>
+            {eq name="$userInfo.type" value="1"}
+            <tr>
+                <td><strong>学校：</strong></td>
+                <td>{$userInfo.school}</td>
+            </tr>
+            <tr>
+                <td><strong>学号：</strong></td>
+                <td>{$userInfo.student_id}</td>
+            </tr>
+            <tr>
+                <td><strong>姓名：</strong></td>
+                <td>{$userInfo.true_name}</td>
+            </tr>
+            {else/}
+            <tr>
+                <td><strong>商户名称：</strong></td>
+                <td>{$userInfo.shop_name}</td>
+            </tr>
+            <tr>
+                <td><strong>经营者姓名/法定代表人：</strong></td>
+                <td>{$userInfo.true_name}</td>
+            </tr>
+            {/eq}
+            <tr>
+                <td colspan="2">
+                    <button type="button" class="btn btn-primary btn-sm" id="modifyBtn">修改资料</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<form class="form-horizontal" id="userForm" enctype="multipart/form-data" style="display: none">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">昵称:</label>
+        <div class="col-sm-2">
+            <input value="{$userInfo.name}" name="name" type="text" class="form-control" placeholder="请输入昵称">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">头像:</label>
+        <div class="col-sm-10">
+            <input type="file" name="avatar">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">地址:</label>
+        <div class="col-sm-2">
+            <input value="{$userInfo.address}" type="text" class="form-control" name="address" placeholder="请输入地址">
+        </div>
+        <div class="col-sm-4">
+            地址不对？<button
+                type="button"
+                class="btn btn-default btn-info"
+                data-toggle="modal"
+                data-target="#mapModal"
+                title="点击地图可选择地址">点击这里</button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">手机号:</label>
+        <div class="col-sm-2">
+            <input value="{$userInfo.mobile}" type="text" class="form-control" name="mobile">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">密码:</label>
+        <div class="col-sm-2 ">
+            <input value="{$userInfo.password}" type="password" class="form-control" name="password">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">用户类型:</label>
+        <div class="col-sm-4">
+            <label class="radio-inline">
+                <input type="radio"
+                    name="type"
+                    value="1"
+                    id="student"
+                    {eq name="userInfo.type" value="1"}checked{/eq}/>
+                学生
+            </label>
+            <label class="radio-inline">
+                <input
+                    type="radio"
+                    name="type"
+                    value="0"
+                    id="business"
+                    {eq name="userInfo.type" value="0"}checked{/eq}/>
+                商家
+            </label>
+        </div>
+    </div>
+    <div id="studentChoice" style="display: block">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">学校:</label>
+            <div class="col-sm-2">
+                <input value="{$userInfo.school}" type="text" class="form-control" name="school">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">学号:</label>
+            <div class="col-sm-2">
+                <input value="{$userInfo.student_id}" type="text" class="form-control" name="student_id">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">姓名:</label>
+            <div class="col-sm-2">
+                <input value="{$userInfo.true_name}" type="text" class="form-control" name="true_name" title="真实姓名">
+            </div>
+        </div>
+    </div>
+    <div id="businessChoice" style="display: none">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">营业执照照片：</label>
+            <div class="col-sm-2">
+                <input type="file" name="licence_img" title="需年检章齐全，当年注册除外">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">注册号：</label>
+            <div class="col-sm-2">
+                <input type="text" value="{$userInfo.register_id}" name="register_id" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商户名称：</label>
+            <div class="col-sm-2">
+                <input type="text" value="{$userInfo.shop_name}" name="shop_name"  class="form-control" title="若营业执照上无商户名称，请填写“个体户+经营者姓名”，如“个体户张三”">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">经营者姓名/法定代表人：</label>
+            <div class="col-sm-2">
+                <input type="text" value="{$userInfo.true_name}" name="true_name" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">是否是管理员:</label>
+        <div class="col-sm-2">
+            <label class="radio-inline">
+                <input type="radio" name="is_admin" value="1" {eq name="userInfo.is_admin" value="1"}checked{/eq}/> 是
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="is_admin" value="0" {eq name="userInfo.is_admin" value="1"}checked{/eq}/> 否
+            </label>
+        </div>
+    </div>
+    <input type="hidden" name="create_person" value="{$Think.session.admin_id}">
+    <input type="hidden" name="update_person" value="{$Think.session.admin_id}">
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button type="button" id="submitBtn" class="btn btn-default btn-success">增加</button>
+        </div>
+    </div>
+</form>
+
+
+
+<!-- 地图模态框 -->
+<div class="modal fade" id="mapModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">地图</h4>
+            </div>
+            <div class="modal-body" id="mapContainer" style="height: 400px; padding: 10px 15px"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 创建地图实例
+    var map = new BMap.Map("mapContainer");
+    // 创建点坐标
+    var point = new BMap.Point(116.404, 39.915);
+    // 初始化地图，设置中心点坐标和地图级别
+    map.centerAndZoom(point, 15);
+
+    //开启鼠标滚轮缩放
+    map.enableScrollWheelZoom(true);
+    // 平移控件
+    map.addControl(new BMap.NavigationControl());
+    // 缩放控件
+    map.addControl(new BMap.ScaleControl());
+    // 缩略图控件
+    map.addControl(new BMap.OverviewMapControl());
+
+    // 创建地址解析器实例
+    var myGeo = new BMap.Geocoder();
+    // 创建获取位置实例
+    var geolocation = new BMap.Geolocation();
+    // 获取最近位置
+    geolocation.getCurrentPosition(function(r){
+        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            var mk = new BMap.Marker(r.point);
+            map.addOverlay(mk);
+            map.panTo(r.point);
+            myGeo.getLocation(new BMap.Point(r.point.lng, r.point.lat), function(result){
+                if (result){
+                    $("#articleForm input[name='address']").val(result.address);
+                }
+            });
+        }
+    });
+    map.addEventListener("click", function(e){
+        var pt = e.point;
+        myGeo.getLocation(pt, function(result){
+            if (result){
+                $('#myAddress').val(result.address);
+            }
+        });
+    });
+</script>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').css('display', 'block');
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                $('.alert').css('display', 'none');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function () {
+        $('#modifyBtn').click(function () {
+            $('#userInfoTable').css('display', 'none');
+            $('#userForm').css('display', 'block');
+        })
+        // 发表文章
+        $('#submitBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('name', $("input[name='name']").val());
+            formContent.append('avatar', $("input[name='avatar']").get(0).files[0]);
+            formContent.append('address', $("input[name='address']").val());
+            formContent.append('mobile', $("input[name='mobile']").val());
+            formContent.append('password', $("input[name='password']").val());
+            formContent.append('type', $("input[name='type']:checked").val());
+            formContent.append('school', $("input[name='school']").val());
+            formContent.append('student_id', $("input[name='student_id']").val());
+            formContent.append('true_name', $("input[name='true_name']").val());
+            formContent.append('licence_img', $("input[name='licence_img']").get(0).files[0]);
+            formContent.append('register_id', $("input[name='register_id']").val());
+            formContent.append('shop_name', $("input[name='shop_name']").val());
+            formContent.append('create_person', $("input[name='create_person']").val());
+            formContent.append('update_person', $("input[name='update_person']").val());
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/handleUserAdd')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('user/myInfoMange')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+    })
+</script>

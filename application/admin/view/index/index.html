@@ -1,0 +1,303 @@
+{layout name="public:layout"}
+
+<h3 class="text-success bg-success" style="padding: 10px;">网站数据统计</h3>
+
+<div class="row bg-info" style="margin: 10px 0;">
+    <div class="col-md-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+        <div class="text-center">
+            <p class="text-info" style="font-size: 60px; font-weight: 400;">{$dealNum}</p>
+            <p style="font-size: 20px;">成交量</p>
+        </div>
+    </div>
+    <div class="col-md-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+        <div class="text-center">
+            <p class="text-info" style="font-size: 60px; font-weight: 400;">{$visitNum}</p>
+            <p style="font-size: 20px;">访问人数</p>
+        </div>
+    </div>
+    <div class="col-md-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+        <div class="text-center">
+            <p class="text-info" style="font-size: 60px; font-weight: 400;">{$regNum}</p>
+            <p style="font-size: 20px;">注册人数</p>
+        </div>
+    </div>
+    <div class="col-md-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+        <div class="text-center">
+            <p class="text-info" style="font-size: 60px; font-weight: 400;">{$loginNum}</p>
+            <h6 style="font-size: 20px;">登录人数</h6>
+        </div>
+    </div>
+</div>
+
+<div class="row bg-danger" style="margin: 10px 0; padding: 20px 0">
+    <div class="col-md-6">
+        <span class="text-danger">公告</span>: {$notice.content|getArtContent} <button notice="{$notice}" class="btn btn-default btn-danger noticeDetail">详情</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading">最热物品</div>
+            <div class="panel-body">
+                <table class="table table-default table-hover text-center table-bordered">
+                    <tr>
+                        <th class="text-center">物品</th>
+                        <th class="text-center">物品单价</th>
+                        <th class="text-center">物品总数</th>
+                        <th class="text-center">可借时间</th>
+                        <th class="text-center">访问量</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                    {volist name="goodsList" id="goods" empty="$empty"}
+                    <tr>
+                        <td>{$goods.name|getArtContent}</td>
+                        <td>{$goods.price}元</td>
+                        <td>{$goods.lend_total}</td>
+                        <td>{$goods.lend_time}</td>
+                        <td>{$goods.pv}</td>
+                        <td><button class="btn btn-default btn-info btn-xs detailBtn" content="{$goods.describe}">详情</button></td>
+                    </tr>
+                    {/volist}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading">最新反馈</div>
+            <div class="panel-body" style="height: 500px; overflow: auto">
+                {volist name="userFeedbackList" id="item"}
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-danger">
+                        <div>{$item.content|getArtContent}</div>
+                        <div class="text-right">{$item.create_person}</div>
+                        <div class="text-right">{$item.create_time|date="Y-m-d"}</div>
+                    </li>
+                </ul>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-5">
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading">商品类型统计图</div>
+            <div class="panel-body">
+                <div id="goodsType" style="width: 600px; height:400px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading">站点信息信息</div>
+            <div class="panel-body">
+                <table class="table table-default table-hover text-center table-bordered">
+                    <tr>
+                        <td>网站状态</td>
+                        <td>
+                            {eq name="siteStatus.is_open" value="1"}
+                            <div class="text-info bg-info">开启</div>
+                            {else/}
+                            <div class="text-danger bg-danger">关闭</div>
+                            {/eq}
+                        </td>
+                        <td><a href="{:url('site/siteMange')}" class="btn btn-default btn-info">设置</a></td>
+                    </tr>
+                    <tr>
+                        <td>是否开启注册</td>
+                        <td>
+                            {eq name="siteStatus.is_reg" value="1"}
+                            <div class="text-info bg-info">开启</div>
+                            {else/}
+                            <div class="text-danger bg-danger">关闭</div>
+                            {/eq}
+                        </td>
+                        <td><a href="{:url('site/siteMange')}" class="btn btn-default btn-info">设置</a></td>
+                    </tr>
+                    <tr>
+                        <td>是否允许用户登录</td>
+                        <td>
+                            {eq name="siteStatus.is_login" value="1"}
+                            <div class="text-info bg-info">开启</div>
+                            {else/}
+                            <div class="text-danger bg-danger">关闭</div>
+                            {/eq}
+                        </td>
+                        <td><a href="{:url('site/siteMange')}" class="btn btn-default btn-info">设置</a></td>
+                    </tr>
+                    <tr>
+                        <td>是否开启网站评论</td>
+                        <td>
+                            {eq name="siteStatus.is_comment" value="1"}
+                            <div class="text-info bg-info">开启</div>
+                            {else/}
+                            <div class="text-danger bg-danger">关闭</div>
+                            {/eq}
+                        </td>
+                        <td><a href="{:url('site/siteMange')}" class="btn btn-default btn-info">设置</a></td>
+                    </tr>
+                    <tr>
+                        <td>是否开启网站交易</td>
+                        <td>
+                            {eq name="siteStatus.is_deal" value="1"}
+                            <div class="text-info bg-info">开启</div>
+                            {else/}
+                            <div class="text-danger bg-danger">关闭</div>
+                            {/eq}
+                        </td>
+                        <td><a href="{:url('site/siteMange')}" class="btn btn-default btn-info">设置</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 详情模态框 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body" id="content"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 公告详情模态框 -->
+<div class="modal fade" id="noticeDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="noticeTitle"></h4>
+            </div>
+            <div class="modal-body" id="noticeContent"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var typeOption = {
+        title : {
+            text: '商品类型统计图',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: []
+        },
+        series : [
+            {
+                name: '商品类型统计',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+    var userTypeOption = {
+        title : {
+            text: '用户类型统计图',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: []
+        },
+        series : [
+            {
+                name: '商品类型统计',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+    var _this = this;
+    $(function () {
+
+        $('.detailBtn').click(function () {
+            var content = $(this).attr('content');
+            $('#content').html(content)
+            $('#detailModal').modal('show')
+        })
+
+        $('.noticeDetail').click(function () {
+            var notice = JSON.parse($(this).attr('notice'));
+            $('#noticeTitle').html(notice.name)
+            $('#noticeTitle').html(notice.content)
+            $('#noticeDetailModal').modal('show')
+        })
+
+        $.ajax({
+            type: 'post',
+            url: "{:url('index/getGoodsType')}",
+            success: function (data) {
+                var typeArr = [];
+                for(var i = 0; i <data.length; i++) {
+                    typeArr.push(data[i].name)
+                }
+                _this.typeOption.legend.data = typeArr
+            }
+        })
+
+        $.ajax({
+            type: 'post',
+            url: "{:url('index/getGoodsTypeNum')}",
+            success: function (data) {
+                _this.typeOption.series[0].data = data.list
+                var myChart = echarts.init(document.getElementById('goodsType'));
+                myChart.setOption(typeOption);
+            }
+        })
+
+        $.ajax({
+            type: 'post',
+            url: "{:url('index/getGoodsTypeNum')}",
+            success: function (data) {
+                var typeArr = [];
+                var list = data.list;
+                for(var i = 0; i < list.length; i++) {
+                    typeArr.push(list[i].name)
+                }
+                _this.typeOption.legend.data = typeArr
+                _this.typeOption.series[0].data = list
+                var myChart = echarts.init(document.getElementById('goodsType'));
+                myChart.setOption(typeOption);
+            }
+        })
+    })
+</script>

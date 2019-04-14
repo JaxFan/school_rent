@@ -1,0 +1,160 @@
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{:url('index/index')}">校园易租后台管理系统</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                {if $Think.session.admin_id}
+                <li><a href="javascript:;">{$Think.session.admin_name}</a></li>
+                {/if}
+                <li>
+                    <a href="javascript:;" id="lock">
+                        <span style="padding-right: 3px" class="glyphicon glyphicon-eye-close"></span>锁屏
+                    </a>
+                </li>
+                <li>
+                    <a href="{:url('user/logout')}">
+                        <span style="padding-right: 3px" class="glyphicon glyphicon-off"></span>退出系统
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 锁屏模态框 -->
+<div id="lockModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">锁屏</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <input type="hidden" id="adminIdLack" value="{$Think.session.admin_id}">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" data-container="body">密码:</label>
+                        <div class="col-sm-6">
+                            <input id="adminPswLack" type="password" class="form-control" placeholder="Password" data-toggle="popover" data-placement="top" data-content="请输入管理员密码解除锁屏状态">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="clearLockScreen">确定</button>
+                            <span class="text-danger" id="tiptext"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function () {
+        $.ajax({
+            type: 'post',
+            url: "{:url('index/getScreenStatus')}",
+            success: function (data) {
+                switch (data.status) {
+                    case 1:
+                        $('#lockModal').modal({
+                            modal: 'show',
+                            backdrop: 'static',
+                            keyboard: false
+                        })
+                        break;
+                    case 0:
+                    case -1:
+                        $('#lockModal').modal('hide')
+                        break;
+                    default:
+                        $('#lockModal').modal('hide')
+                        break;
+                }
+            }
+        })
+        $("#lock").on('click', function () {
+            $.ajax({
+                type: 'post',
+                url: "{:url('index/lackScreen')}",
+                data: {
+                    lockScreen: 1
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            $('#lockModal').modal({
+                                modal: 'show',
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+        $('#clearLockScreen').on('click', function () {
+            if ('' == $('#adminPsw').val()) {
+                $('#tiptext').text('请输入密码');
+                return
+            }
+            $.ajax({
+                type: 'post',
+                url: "{:url('index/clearLackScreen')}",
+                data: {
+                    adminId: $('#adminIdLack').val(),
+                    password: $('#adminPswLack').val(),
+                    lockScreen: 0
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            window.location.href="{:url('index/index')}"
+                            break;
+                        case 0:
+                        case -1:
+                            $('#tiptext').text(data.msg);
+                            break;
+                        default:
+                            $('#tiptext').text(data.msg);
+                            break;
+                    }
+                }
+            })
+        })
+        $('#adminPsw').on('focus', function () {
+            $(this).popover('show');
+        })
+        $('#adminPsw').on('blur', function () {
+            $(this).popover('hide');
+        })
+    })
+</script>

@@ -1,0 +1,400 @@
+{layout name='public:layout'}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success bg-success" style="padding: 10px;">公告列表</h3>
+
+<div  style="padding: 10px 0;">
+    <form class="form-inline" style="display: inline-block" method="post" action="{:url('notice/getgoodsList')}">
+        <div class="form-group">
+            <input type="text" name="keywords" class="form-control" placeholder="请输入标题" value="{$keywords}">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+
+    <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('notice/getNoticeList')}">
+        <div class="form-group">
+            <select name="is_draft" class="form-control">
+                <option value="" {eq name="is_draft" value=""} selected{eq}>选择公告类型</option>
+                <option value="0" {eq name="is_draft" value="0"} selected{eq}>草稿</option>
+                <option value="1" {eq name="is_draft" value="1"} selected{eq}>已完成</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select name="status" class="form-control">
+                <option value="" {eq name="is_draft" value=""} selected{eq}>选择公告状态</option>
+                <option value="0" {eq name="is_draft" value="0"} selected{eq}>禁用</option>
+                <option value="1" {eq name="is_draft" value="1"} selected{eq}>启用</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+</div>
+<table class="table table-default table-hover text-center table-bordered">
+    <tr>
+        <td>#</td>
+        <td>标题</td>
+        <td>内容</td>
+        <td>草稿</td>
+        <td>发布者</td>
+        <td>发布时间</td>
+        <td>状态</td>
+        <td colspan="2">操作</td>
+    </tr>
+    {volist name="noticeList" id="notice" empty="$empty"}
+    <tr>
+        <td>{$notice.id}</td>
+        <td>{$notice.name}</td>
+        <td>
+            <span class="text-primary">{$notice.content|getArtContent}</span>
+            <button notCont="{$notice.content}" class="btn btn-info btn-xs detail">详情</button>
+        </td>
+        <td>
+            {eq name="$notice.is_draft" value="1"}
+                <span class="text-danger">草稿</span>
+                <a
+                    notObj="{$notice}"
+                    class="btn btn-info btn-xs modifyNotBtn">
+                    继续编写
+                </a>
+            {else/}
+                <span class="text-primary">已完成</span>
+            {/eq}
+        </td>
+        <td>{$notice.create_person}</td>
+        <td>{$notice.create_time|date="y-m-d"}</td>
+        <td>
+            {eq name="$notice.status" value="0"}
+                <span class="text-danger">禁用</span>
+                <button
+                    notId="{$notice.id}"
+                    notStatus="{$notice.status}"
+                    class="btn btn-info btn-xs recover">
+                    恢复
+                </button>
+            {else/}
+                <span class="text-primary">启用</span>
+                <button
+                    notId="{$notice.id}"
+                    notStatus="{$notice.status}"
+                    class="btn btn-danger btn-xs recover">
+                    禁用
+                </button>
+            {/eq}
+        </td>
+        <td>
+            <button
+                class="btn btn-danger btn-xs modifyNotBtn"
+                notObj="{$notice}">
+                修改公告
+            </button>
+        </td>
+        <td>
+            <button
+                class="btn btn-danger btn-xs deleNotBtnTrue"
+                notId="{$notice.id}">
+                彻底删除
+            </button>
+        </td>
+    </tr>
+    {/volist}
+</table>
+
+<div style="text-align: center">
+    {$noticeList|raw}
+</div>
+
+<a class="btn btn-primary" href="{:url('notice/editNotice')}">增加公告</a>
+
+<!-- 详情模态框 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">物品描述</h4>
+            </div>
+            <div class="modal-body" id="content"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 修改模态框 -->
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改公告</h4>
+            </div>
+            <div class="modal-body" id="modifyConent">
+                <form class="form-horizontal" id="cotModifyForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">标题:</label>
+                        <div class="col-sm-3">
+                            <input name="name" type="text" class="form-control" placeholder="请输入标题">
+                        </div>
+                        <p class="col-sm-3 text-warning">注意：一次最多上传 5 张图片</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">商品描述:</label>
+                        <div class="col-sm-9">
+                            <div id="editorHead" class="toolbar" style="border: 1px solid #ccc"></div>
+                            <div style="padding: 5px 0; color: #ccc"></div>
+                            <div id="editorBody" class="text" style="border: 1px solid #ccc; min-height: 600px;">
+                                <p>请编写公告</p>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            var E = window.wangEditor;
+                            var editor = new E('#editorHead', '#editorBody');
+                            // 配置服务器端地址
+                            editor.customConfig.uploadImgServer = "{:url('editor/upload')}";
+                            // 将图片大小限制为 3M
+                            editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024;
+                            // 限制一次最多上传 5 张图片
+                            editor.customConfig.uploadImgMaxLength = 5;
+                            // 配置编辑区域的 z-index
+                            editor.customConfig.zIndex = 1;
+                            editor.create();
+                        </script>
+                    </div>
+                    <input type="hidden" name="notId" value="">
+                    <input type="hidden" id="adminId" value="{$Think.session.admin_id}">
+                    <input type="hidden" id="adminName" value="{$Think.session.admin_name}">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="clearContentBtn" class="btn btn-default btn-danger">清除内容</button>
+                <button type="button" id="submitDraftBtn" class="btn btn-default btn-success">存为草稿</button>
+                <button
+                    type="button"
+                    id="submitBtn"
+                    class="btn btn-default btn-success"
+                    data-toggle="popover"
+                    data-placement="top"
+                    title="注意"
+                    data-content="因本网站默认只能发布一个公告，所以公告默认为禁用状态。">
+                    修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 彻底删除栏目模态框 -->
+<div id="deleNotModalTrue" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">彻底删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">彻底删除将使物品从数据库中被彻底<strong>删除当前且不可恢复</strong></p>
+                <form class="form-horizontal" action="" method="" id="deleNotForm">
+                    <input type="hidden" name="adminId" value="{$Think.session.admin_id}">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">管理员密码:</label>
+                        <div class="col-sm-6">
+                            <input name="adminPsw" type="password" class="form-control" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="deleNotBtnTrue">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    var goodsId = 0;
+
+    $(function () {
+
+        $('.detail').on('click', function () {
+            var notCont = $(this).attr('notCont');
+            $('#detailModal').modal('show');
+            $('#content').html(notCont);
+        })
+
+        $('#submitBtn').on('mouseover', function () {
+            $('#submitBtn').popover('show');
+        })
+
+        $('#submitBtn').on('mouseout', function () {
+            $('#submitBtn').popover('hide');
+        })
+
+        // 商品修改弹窗
+        $('.modifyNotBtn').on('click', function () {
+            var not = JSON.parse($(this).attr('notObj'));
+
+            $("#cotModifyForm input[name='notId']").val(not.id)
+            $("#cotModifyForm input[name='name']").val(not.name)
+            editor.txt.html(not.content)
+
+            $('#modifyModal').modal('show');
+        })
+
+        // 发布修改草稿
+        $('#submitDraftBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('name', $("#cotModifyForm input[name='name']").val());
+            formContent.append('content', editor.txt.html());
+            formContent.append('update_person', $('#adminName').val());
+            formContent.append('id', $("#cotModifyForm input[name='notId']").val());
+            formContent.append('is_draft', 1);
+            $('#modifyModal').modal('hide');
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/saveNotice')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('notice/getNoticeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+
+            })
+        })
+        // 修改公告发布
+        $('#submitBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('name', $("#cotModifyForm input[name='name']").val());
+            formContent.append('content', editor.txt.html());
+            formContent.append('update_person', $('#adminName').val());
+            formContent.append('id', $("#cotModifyForm input[name='notId']").val());
+            $('#modifyModal').modal('hide');
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/saveNotice')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('notice/getNoticeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+
+            })
+        })
+
+        $('.recover').on('click', function () {
+            var notId = $(this).attr('notId');
+            var notStatus = $(this).attr('notStatus');
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/recoverNotice')}",
+                dataType: 'json',
+                data: {
+                    id: notId,
+                    status: notStatus
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('notice/getNoticeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 2000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 2000)
+                            break;
+                    }
+                }
+
+            })
+        })
+
+        // 显示真删除模态框
+        $('.deleNotBtnTrue').on('click', function () {
+            notId = $(this).attr('notId');
+            $('#deleNotModalTrue').modal('show');
+        })
+        // 真删除前台操作
+        $('#deleNotBtnTrue').on('click', function () {
+            $('#deleNotModalTrue').modal('hide');
+            if ('' == $("#deleNotForm input[name='adminPsw']").val()) {
+                showAlert('alert-danger', '密码不能为空', 1000);
+                return;
+            }
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/deleNotTrue')}",
+                dataType: 'json',
+                data: {
+                    adminId: $("#deleNotForm input[name='adminId']").val(),
+                    adminPsw: $("#deleNotForm input[name='adminPsw']").val(),
+                    id: notId
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('notice/getNoticeList')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+    })
+</script>

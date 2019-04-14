@@ -1,0 +1,225 @@
+{layout name='public:layout'}
+<style>
+    /* table 样式 */
+    table {
+        border-top: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+    }
+    table td,
+    table th {
+        border-bottom: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 3px 5px;
+    }
+    table th {
+        border-bottom: 2px solid #ccc;
+        text-align: center;
+    }
+
+    /* blockquote 样式 */
+    blockquote {
+        display: block;
+        border-left: 8px solid #d0e5f2;
+        padding: 5px 10px;
+        margin: 10px 0;
+        line-height: 1.4;
+        font-size: 100%;
+        background-color: #f1f1f1;
+    }
+
+    /* code 样式 */
+    code {
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+        background-color: #f1f1f1;
+        border-radius: 3px;
+        padding: 3px 5px;
+        margin: 0 3px;
+    }
+    pre code {
+        display: block;
+    }
+
+    /* ul ol 样式 */
+    ul, ol {
+        margin: 10px 0 10px 20px;
+    }
+</style>
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-center text-success">发表公告</h3>
+<form class="form-horizontal" id="goodsForm" enctype="multipart/form-data">
+    <div class="form-group">
+        <label class="col-sm-1 control-label">标题:</label>
+        <div class="col-sm-3">
+            <input name="name" type="text" class="form-control" placeholder="请输入标题">
+        </div>
+        <p class="col-sm-3 text-warning">注意：一次最多上传 5 张图片</p>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">商品描述:</label>
+        <div class="col-sm-10">
+            <div id="editorHead" class="toolbar" style="border: 1px solid #ccc"></div>
+            <div style="padding: 5px 0; color: #ccc"></div>
+            <div id="editorBody" class="text" style="border: 1px solid #ccc; min-height: 600px;">
+                <p>请编写公告</p>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var E = window.wangEditor;
+            var editor = new E('#editorHead', '#editorBody');
+            // 配置服务器端地址
+            editor.customConfig.uploadImgServer = "{:url('editor/upload')}";
+            // 将图片大小限制为 3M
+            editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024;
+            // 限制一次最多上传 5 张图片
+            editor.customConfig.uploadImgMaxLength = 5;
+            // 配置编辑区域的 z-index
+            editor.customConfig.zIndex = 1;
+            editor.create();
+        </script>
+    </div>
+    <input type="hidden" id="adminId" value="{$Think.session.admin_id}">
+    <input type="hidden" id="adminName" value="{$Think.session.admin_name}">
+    <div class="form-group">
+        <div class="col-sm-offset-1 col-sm-10">
+            <button type="button" id="clearContentBtn" class="btn btn-default btn-danger">清除内容</button>
+            <button
+                type="button"
+                id="previewtBtn"
+                class="btn btn-default btn-info"
+                data-toggle="modal"
+                data-target="#detailModal"
+            >预览描述</button>
+            <button type="button" id="submitDraftBtn" class="btn btn-default btn-success">存为草稿</button>
+            <button
+                type="button"
+                id="submitBtn"
+                class="btn btn-default btn-success"
+                data-toggle="popover"
+                title="注意"
+                data-content="因本网站默认只能发布一个公告，所以公告默认为禁用状态。">发布公告</button>
+        </div>
+    </div>
+</form>
+
+<!-- 详情模态框 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">预览</h4>
+            </div>
+            <div class="modal-body" id="editorConent"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭预览</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    $(function () {
+        // 清除编辑器内容
+        $('#clearContentBtn').on('click', function () {
+            editor.txt.clear();
+        })
+
+        // 预览文章
+        $('#previewtBtn').on('click', function () {
+            $('#editorConent').html(editor.txt.html());
+        })
+
+        $('#submitBtn').on('mouseover', function () {
+            $('#submitBtn').popover('show');
+        })
+        $('#submitBtn').on('mouseout', function () {
+            $('#submitBtn').popover('hide');
+        })
+
+        $('#submitDraftBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('name', $("input[name='name']").val());
+            formContent.append('content', editor.txt.html());
+            formContent.append('create_person', $('#adminName').val());
+            formContent.append('update_person', $('#adminName').val());
+            formContent.append('is_draft', 1);
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/saveNotice')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('notice/getNoticeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+
+            })
+        })
+        // 发布公告
+        $('#submitBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('name', $("input[name='name']").val());
+            formContent.append('content', editor.txt.html());
+            formContent.append('create_person', $('#adminName').val());
+            formContent.append('update_person', $('#adminName').val());
+            $.ajax({
+                type: 'post',
+                url: "{:url('notice/saveNotice')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('notice/getNoticeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+
+            })
+        })
+    })
+</script>

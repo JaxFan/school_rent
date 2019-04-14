@@ -1,0 +1,47 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h2 class="panel-title">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-home"></span>订单管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('trade/goTradeList')}">我的订单</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab">
+            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>租赁管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('trade/goAddGoods')}">发布我的物品</a></li>
+                <li class="list-group-item"><a href="{:url('trade/goGoodsList')}">我的租赁物品</a></li>
+                <li class="list-group-item">
+                    <a href="{:url('trade/goSaveList')}">我的收藏</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab">
+            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>个人管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('trade/goCommentList')}">我的评论</a></li>
+                <li class="list-group-item"><a href="{:url('user/goMyInfoMange')}">我的资料</a></li>
+                <li class="list-group-item"><a href="{:url('user/goResetPsw')}">修改密码</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

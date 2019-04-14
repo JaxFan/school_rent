@@ -1,0 +1,202 @@
+{layout name='public:layout'}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success text-center">站点管理</h3>
+
+<!-- 警告框 -->
+<form class="form-horizontal" id="siteForm">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">网站名:</label>
+        <div class="col-sm-3">
+            <input name="name" value="{$site.name}" type="text" class="form-control" placeholder="请输入网站名">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">网站描述:</label>
+        <div class="col-sm-3">
+            <textarea name="describe" value="{$site.describe}" class="form-control" rows="3" placeholder="请输入网站描述"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">是否开启网站:</label>
+        <div class="col-sm-3">
+            <label class="radio-inline">
+                <input type="radio" name="is_open" value="1"
+                   {eq name="site.is_open" value="1"}checked {/eq}
+                > 开启
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="is_open" value="0"
+                   {eq name="site.is_open" value="0"}checked {/eq}
+                > 关闭
+            </label>
+        </div>
+    </div>
+    {eq name="$site.is_open" value='1'}
+    <div id="isGo" style="display: block">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否开启网站注册:</label>
+            <div class="col-sm-3">
+                <label class="radio-inline">
+                    <input type="radio" name="is_reg" value="1"
+                           {eq name="site.is_reg" value="1"}checked {/eq}
+                    > 开启
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="is_reg" value="0"
+                           {eq name="site.is_reg" value="0"}checked {/eq}
+                    > 关闭
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否开启注册网站登录:</label>
+            <div class="col-sm-3">
+                <label class="radio-inline">
+                    <input type="radio" name="is_login" value="1"
+                       {eq name="site.is_login" value="1"}checked {/eq}
+                    > 开启
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="is_login" value="0"
+                       {eq name="site.is_login" value="0"}checked {/eq}
+                    > 关闭
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否开启网站评论:</label>
+            <div class="col-sm-3">
+                <label class="radio-inline">
+                    <input type="radio" name="is_comment" value="1"
+                       {eq name="site.is_comment" value="1"}checked {/eq}
+                    > 开启
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="is_comment" value="0"
+                       {eq name="site.is_comment" value="0"}checked {/eq}
+                    > 关闭
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否开启网站交易:</label>
+            <div class="col-sm-3">
+                <label class="radio-inline">
+                    <input type="radio" name="is_deal" value="1"
+                           {eq name="site.is_deal" value="1"}checked {/eq}
+                    > 开启
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="is_deal" value="0"
+                           {eq name="site.is_deal" value="0"}checked {/eq}
+                    > 关闭
+                </label>
+            </div>
+        </div>
+    </div>
+    {/eq}
+    <div class="form-group">
+        <div class="col-sm-offset-3">
+            <button type="button" class="btn btn-danger" id="setBtn">设置</button>
+        </div>
+    </div>
+</form>
+
+<div id="setModalTrue" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">输入密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="" method="">
+                    <input type="hidden" id="adminId1" value="{$Think.session.admin_id}">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">管理员密码:</label>
+                        <div class="col-sm-6">
+                            <input id="adminPsw1" type="password" class="form-control" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="setBtnTrue">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function () {
+        // 设置
+        $('#setBtn').on('click', function () {
+            $('#setModalTrue').modal('show')
+        })
+        $('#setBtnTrue').on('click', function () {
+            $('#setModalTrue').modal('hide')
+            if ('' == $('#adminPsw1').val()) {
+                showAlert('alert-danger', '密码不能为空', 1000);
+                return;
+            }
+            var formContent = new FormData();
+            formContent.append('name', $("#siteForm input[name='name']").val());
+            formContent.append('describe', $("#siteForm input[name='describe']").val());
+            formContent.append('is_open', $("#siteForm input[name='is_open']:checked").val());
+            formContent.append('is_reg', $("#siteForm input[name='is_reg']:checked").val());
+            formContent.append('is_login', $("#siteForm input[name='is_login']:checked").val());
+            formContent.append('is_comment', $("#siteForm input[name='is_comment']:checked").val());
+            formContent.append('is_deal', $("#siteForm input[name='is_deal']:checked").val());
+            formContent.append('adminId', $('#adminId1').val());
+            formContent.append('adminPsw', $('#adminPsw1').val());
+            $.ajax({
+                type: 'post',
+                url: "{:url('site/handleSiteMange')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('index/index')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+        $("#siteForm input[name='is_open']:eq(0)").on('change', function () {
+            $('#isGo').css('display', 'block');
+        })
+        $("#siteForm input[name='is_open']:eq(1)").on('change', function () {
+            $('#isGo').css('display', 'none');
+        })
+    })
+</script>

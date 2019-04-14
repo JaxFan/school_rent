@@ -1,0 +1,275 @@
+{layout name="public:layout"}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3  class="text-success bg-success" style="padding: 10px;">用户列表</h3>
+<div  style="padding: 10px 0;">
+
+    <form class="form-inline" style="display: inline-block" method="post" action="{:url('user/getUserList')}">
+        <div class="form-group">
+            <input type="text" name="keywords" class="form-control" placeholder="请输入用户名" value="{$keywords}">
+        </div>
+        <button type="submit" class="btn btn-default btn-primary">查询</button>
+    </form>
+
+    <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('user/getUserList')}">
+        <div class="form-group">
+            <select name="type" class="form-control">
+                <option value=""
+                    {eq name="type" value=""}selected{/eq}
+                >无</option>
+                <option value="1"
+                    {eq name="type" value="1"}selected{/eq}
+                >学生</option>
+                <option value="0"
+                    {eq name="type" value="0"}selected{/eq}
+                >校外商家</option>
+            </select>
+            <select name="status" class="form-control">
+                <option value=""
+                    {eq name="$status" value=""}selected{/eq}
+                >无</option>
+                <option value="1"
+                    {eq name="$status" value="1"}selected{/eq}
+                >正常用户</option>
+                <option value="0"
+                    {eq name="$status" value="0"}selected{/eq}
+                >黑名单用户</option>
+            </select>
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-default table-hover text-center table-bordered">
+    <tr>
+        <td>#</td>
+        <td>用户名</td>
+        <td>类型</td>
+        <td>用户信誉度</td>
+        <td>状态</td>
+        <td>注册时间</td>
+        <td colspan="3">操作</td>
+    </tr>
+    {volist name="userList" id="user" empty="$empty"}
+    <tr>
+        <td>{$user.id}</td>
+        <td>{$user.name}</td>
+        <td>
+            {eq name="$user.type" value="1"}
+                <span class="text-primary">学生</span>
+            {else/}
+                <span class="text-danger">校外商家</span>
+            {/eq}
+        </td>
+        <td>{$user.level}</td>
+        <td>
+            {eq name="$user.status" value="1"}
+                <span class="text-primary">正常用户</span>
+            {else/}
+                <span class="text-danger">黑名单用户</span>&nbsp;
+                <button type="button" class="btn btn-primary btn-xs recover" userId="{$user.id}">恢复</button>
+            {/eq}
+        </td>
+        <td>{$user.create_time|date="Y-m-d"}</td>
+        <td>
+            <a href="{:url('user/getUserDetail', ['id' => $user.id])}"
+               class="btn btn-info btn-xs"
+            >用户详情</a>
+        </td>
+        <td>
+            <a href="javascript:;"
+               class="btn btn-warning btn-xs deleUserBtn"
+               userObj="{$user}"
+            >加入黑名单</a>
+        </td>
+        <td>
+            <a href="javascript:;"
+               class="btn btn-danger btn-xs deleUserBtnTrue"
+               userObj="{$user}"
+            >彻底删除</a>
+        </td>
+    </tr>
+    {/volist}
+</table>
+<div style="text-align: center">
+    {$userList|raw}
+</div>
+<!-- 增加用户按钮 -->
+<a class="btn btn-primary" href="{:url('user/addUser')}">增加用户</a>
+<!-- 删除模态框 -->
+<div id="deleUserModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">加入黑名单将使当前用户<strong>不能使用本平台</strong></p>
+                <button type="button" class="btn btn-primary" id="deleUserBtn">确定</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 彻底删除栏目模态框 -->
+<div id="deleUserModalTrue" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">彻底删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">彻底删除将从数据库中<strong>删除当前栏目且不可恢复</strong></p>
+                <form class="form-horizontal" action="" method="">
+                    <input type="hidden" id="adminId" value="{$Think.session.admin_id}">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">管理员密码:</label>
+                        <div class="col-sm-6">
+                            <input id="adminPsw" type="password" class="form-control" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="deleUserBtnTrue">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    var id = 0;
+    $(function () {
+        // 显示假删除模态框
+        $('.deleUserBtn').on('click', function () {
+            var userJson = JSON.parse($(this).attr('userObj'));
+            id = userJson.id;
+            if (0 == userJson.status) {
+                showAlert('alert-danger', '用户已经被加入黑名单了', 800);
+                return;
+            }
+            $('#deleUserModal').modal('show');
+        })
+        // 假删除前台操作
+        $('#deleUserBtn').on('click', function () {
+            $('#deleUserModal').modal('hide');
+            $.ajax({
+                type: 'get',
+                url: "{:url('user/deleteUser')}",
+                dataType: 'json',
+                data: {
+                    userId: id
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 1000).then(function () {
+                            window.location.href="{:url('user/getUserList')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+
+        // 显示真删除模态框
+        $('.deleUserBtnTrue').on('click', function () {
+            var userJson = JSON.parse($(this).attr('userObj'));
+            id = userJson.id;
+            $('#deleUserModalTrue').modal('show');
+        })
+        // 真删除前台操作
+        $('#deleUserBtnTrue').on('click', function () {
+            $('#deleUserModalTrue').modal('hide');
+            if ('' == $('#adminPsw').val()) {
+                showAlert('alert-danger', '密码不能为空', 1000);
+                return;
+            }
+            $.ajax({
+                type: 'get',
+                url: "{:url('user/deleteUserTrue')}",
+                dataType: 'json',
+                data: {
+                    adminId: $('#adminId').val(),
+                    adminPsw: $('#adminPsw').val(),
+                    userId: id
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('user/getUserList')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+        // 撤销假删除
+        $('.recover').on('click', function () {
+            var id = JSON.parse($(this).attr('userId'));
+            $.ajax({
+                type: 'get',
+                url: "{:url('user/recoverUser')}",
+                dataType: 'json',
+                data: {
+                    userId: id
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('user/getUserList')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+        /*$("#type").bind('change', function () {
+            console.log(this.value)
+            $.ajax({
+                type: 'get',
+                url: "{:url('user/getUserList')}",
+                dataType: 'json',
+                data: {
+                    type: this.value
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800)
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+        $("#status").bind('change', function () {
+            console.log(this.value)
+        })*/
+    })
+</script>

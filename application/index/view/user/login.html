@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            $('#wrap').css('display', 'none')
+        })
+    </script>
+</head>
+<body>
+<div id="wrap" style="position: fixed; width: 100%; height: 100%; background-color: #fff; z-index: 100; display: flex; justify-content: center; align-items: center;">
+    <img src="/static/images/timg_1.gif" style="width: 200px; height: 200px; margin: auto">
+</div>
+<!-- 警告框 -->
+<div class="alert fade" style="display: none; z-index: 2; position: fixed; top: 200px; left: 50%; width: 500px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header text-center text-primary">
+                <h3>用户登录</h3>
+            </div>
+            <form class="form-horizontal" id="loginForm">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">电话:</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="mobile" placeholder="电话" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">密码:</label>
+                    <div class="col-sm-4">
+                        <input type="password" class="form-control" name="password" placeholder="密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">验证码:</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="captcha" placeholder="验证码">
+                    </div>
+                    <div class="col-sm-4">
+                        <img onclick="this.src='{:captcha_src()}'" width="150" src="{:captcha_src()}" alt="captcha" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button type="button" id="loginBtn" class="btn btn-info">登录</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').css('display', 'block');
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                $('.alert').css('display', 'none');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    $(function () {
+        $('#loginBtn').on('click', function () {
+            $('#userLoginModal').modal('hide')
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/checkLogin')}",
+                data: $('#loginForm').serialize(),
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-danger', data.msg, 1000).then(function () {
+                                window.location.href="{:url('trade/goTradeList')}"
+                            })
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

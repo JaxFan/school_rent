@@ -1,0 +1,120 @@
+{layout name="public:layout"}
+
+<h2 class="text-success bg-success" style="padding: 10px;">评论列表</h2>
+
+
+<table class="table table-default table-hover text-center table-bordered">
+    <tr class="success">
+        <td>#</td>
+        <td>物品名</td>
+        <td>提供人</td>
+        <td>内容</td>
+        <td colspan="2">操作</td>
+    </tr>
+    {volist name="commentList" id="item" empty="$empty"}
+    <tr>
+        <td>{$item.id}</td>
+        <td>{$item.goods_id|getGoodsName}</td>
+        <td>{$item.user_id|getUserName}</td>
+        <td>{$item.content|getArtContent}</td>
+        <td>
+            <a class="btn btn-info btn-xs detailBtn" commCont="{$item.content}">详情</a>
+        </td>
+        <td>
+            <a class="btn btn-danger btn-xs del" commStatus="{$item.status}" commId="{$item.id}">删除</a>
+        </td>
+    </tr>
+    {/volist}
+</table>
+
+<!-- 详情模态框 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情</h4>
+            </div>
+            <div class="modal-body" id="content"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除模态框 -->
+<div id="deleGoodsModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">你确定删除当前评论吗</strong></p>
+                <button type="button" class="btn btn-primary" id="deleBtn">确定</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<script type="text/javascript">
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function () {
+        $('.detailBtn').on('click', function () {
+            var commCont = $(this).attr('commCont');
+            $('#detailModal').modal('show');
+            $('#content').html(commCont);
+        })
+
+        $('.del').on('click', function () {
+            var commId = $(this).attr('commId');
+            var commStatus = $(this).attr('commStatus');
+            $.ajax({
+                type: 'post',
+                url: "{:url('trade/delComm')}",
+                dataType: 'json',
+                data: {
+                    id: commId,
+                    status: commStatus
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('trade/goCommentList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 2000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 2000)
+                            break;
+                    }
+                }
+
+            })
+        })
+    })
+</script>

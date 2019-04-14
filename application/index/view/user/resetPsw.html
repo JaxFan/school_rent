@@ -1,0 +1,159 @@
+{layout name="public:layout"}
+
+<h2 class="text-success bg-success" style="padding: 10px;">修改密码</h2>
+
+<!-- 警告框 -->
+<div class="alert fade" style="display: none; z-index: 2; position: fixed; top: 200px; left: 50%; width: 500px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+<!-- 电话登录 -->
+<form class="form-horizontal" id="registerForm">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">电话:</label>
+        <div class="col-sm-5">
+            <input type="mobile" class="form-control" name="mobile" placeholder="电话" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">验证码:</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" name="captcha" placeholder="请输入验证码">
+        </div>
+        <div class="col-sm-4">
+            <img onclick="this.src='{:captcha_src()}'" width="150" src="{:captcha_src()}" alt="captcha" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">短信验证:</label>
+        <div class="col-sm-5">
+            <input type="text" name="telCheckNum" class="form-control" placeholder="请输入手机验证码">
+        </div>
+        <div class="col-sm-4">
+            <a href="javascript:;" type="button" id="sendCheckNum" class="btn btn-info">
+                点击发送
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">新密码:</label>
+        <div class="col-sm-5">
+            <input type="password" class="form-control" name="password" placeholder="密码由6-20位字母，数字，下划线组成">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <button type="button" id="submitBtn" class="btn btn-primary">修改</button>
+            <button type="reset" class="btn btn-default">取消</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').css('display', 'block');
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                $('.alert').css('display', 'none');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    $(function () {
+        // 发送验证码
+        $('#sendCheckNum').on('click', function () {
+            var mobileNum = $("#registerForm input[name='mobile']").val()
+            var captcha = $("#registerForm input[name='captcha']").val()
+            if (mobileNum == '') {
+                showAlert('alert-danger', '手机号码不能为空', 1000)
+                return
+            }
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/getMobile')}",
+                dataType: 'json',
+                data: {
+                    captcha: captcha,
+                    mobile: mobileNum
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 2000)
+                            break
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break
+                    }
+                }
+            })
+        })
+
+        // 修改用户密码
+        $('#submitBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('mobile', $("input[name='mobile']").val());
+            formContent.append('telCheckNum', $("input[name='telCheckNum']").val());
+            formContent.append('password', $("input[name='password']").val());
+            formContent.append('captcha', $("input[name='captcha']").val());
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/handleResetPsw')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('index/index')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+
+        $('#sendCheckNum').on('click', function () {
+            var mobileNum = $("#registerForm input[name='mobile']").val()
+            var captcha = $("#registerForm input[name='captcha']").val()
+            if (mobileNum == '') {
+                showAlert('alert-danger', '手机号码不能为空', 1000)
+                return
+            }
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/getMobile')}",
+                dataType: 'json',
+                data: {
+                    captcha: captcha,
+                    mobile: mobileNum
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 2000)
+                            break
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break
+                    }
+                }
+            })
+        })
+    })
+</script>

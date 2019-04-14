@@ -1,0 +1,267 @@
+{layout name="public:layout"}
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success bg-success" style="padding: 10px;">物品分类列表</h3>
+<div  style="padding: 10px 0;">
+
+    <form class="form-inline" style="display: inline-block" method="post" action="{:url('goods/goGoodsTypeListPage')}">
+        <div class="form-group">
+            <input type="text" name="keywords" class="form-control" placeholder="请输入种类名" value="{$keywords}">
+        </div>
+        <button type="submit" class="btn btn-default btn-primary">查询</button>
+    </form>
+
+    <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('goods/goGoodsTypeListPage')}">
+        <div class="form-group">
+            <select name="status" class="form-control">
+                <option value=""
+                        {eq name="status" value=""}selected{/eq}
+                >无</option>
+                <option value="1"
+                        {eq name="status" value="1"}selected{/eq}
+                >启用</option>
+                <option value="0"
+                        {eq name="status" value="0"}selected{/eq}
+                >禁用</option>
+            </select>
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-default table-hover text-center table-bordered">
+    <tr>
+        <td>#</td>
+        <td>ID</td>
+        <td>种类名</td>
+        <td>创建人</td>
+        <td>创建时间</td>
+        <td>状态</td>
+        <td colspan="2">操作</td>
+    </tr>
+    {volist name="typeList" id="type" empty="$empty"}
+    <tr class="tr">
+        <td>{$i}</td>
+        <td>{$type.id}</td>
+        <td>{$type.name}</td>
+        <td>{$type.create_person}</td>
+        <td>{$type.create_time|date="Y-m-d"}</td>
+        <td>
+            <label class="radio-inline">
+                <input type="radio" value="1"
+                       {eq name="$type.status" value="1"} checked {else/}disabled{/eq}
+                > 启用
+            </label>
+            <label class="radio-inline">
+                <input type="radio" value="0"
+                       {eq name="$type.status" value="0"} checked {else/}disabled{/eq}
+                > 禁用
+            </label>
+        </td>
+        <td>
+            <a href="javascript:;"
+               typeObj="{$type}"
+               class="btn btn-info btn-xs modifyTypeBtn"
+               data-toggle="modal"
+               data-target="#updateTypeModal"
+            >修改</a>
+        </td>
+        <td>
+            <a href="javascript:;"
+               typeObj="{$type}"
+               class="btn btn-danger btn-xs deleTypeBtnTrue"
+            >彻底删除</a>
+        </td>
+    </tr>
+    {/volist}
+</table>
+<div style="text-align: center">
+    {$typeList|raw}
+</div>
+
+<a href="{:url('goods/goAddGoodsTypePage')}" class="btn btn-default btn-primary">增加物品分类</a>
+
+<!-- 修改种类 -->
+<div class="modal fade" id="updateTypeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改物品种类</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal"  id="updateTypeForm">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">种类:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="updateTypeName" name="name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">状态:</label>
+                        <div class="col-sm-4">
+                            <label class="radio-inline">
+                                <input class="radioGroup" type="radio" name="status" value="1"> 启用
+                            </label>
+                            <label class="radio-inline">
+                                <input class="radioGroup" type="radio" name="status" value="0"> 隐藏
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="updateTypeId">
+                    <input type="hidden" name="update_person" value="{$Think.session.admin_name}">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="updateTypeBtn">修改</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 彻底删除种类模态框 -->
+<div id="deleTypeModalTrue" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">彻底删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">彻底删除将从数据库中<strong>删除当前栏目且不可恢复</strong></p>
+                <form class="form-horizontal" action="" method="">
+                    <input type="hidden" id="adminId" value="{$Think.session.admin_id}">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">密码:</label>
+                        <div class="col-sm-4">
+                            <input id="adminPsw" type="password" class="form-control" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">验证码:</label>
+                        <div class="col-sm-4">
+                            <input id="captcha" name="captcha" type="text" class="form-control" placeholder="请输入验证码">
+                        </div>
+                        <div class="col-sm-2">
+                            <img src="{:captcha_src()}" alt="captcha" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="deleTypeBtnTrue">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    var id = 0;
+    $(function () {
+        // 修改类型状态
+        var radioGroup = $('.radioGroup');
+        $('.modifyTypeBtn').click(function () {
+            var typeJson = JSON.parse($(this).attr('typeObj'));
+            $('#updateTypeName').val(typeJson.name);
+            $('#updateTypeId').val(typeJson.id);
+            if (1 == typeJson.status) {
+                radioGroup.eq(0).prop("checked", true);
+                radioGroup.eq(1).removeAttr('checked');
+            } else {
+                radioGroup.eq(0).removeAttr('checked');
+                radioGroup.eq(1).prop("checked", true);
+            }
+        })
+        // 修改类型
+        $('#updateTypeBtn').on('click', function () {
+            $('#updateTypeModal').modal('hide');
+            $.ajax({
+                type: 'post',
+                url: "{:url('goods/saveGoodsType')}",
+                dataType: 'json',
+                data: $('#updateTypeForm').serialize(),
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('goods/goGoodsTypeListPage')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+
+        // 显示真删除模态框
+        $('.deleTypeBtnTrue').on('click', function () {
+            var typeObj = JSON.parse($(this).attr('typeObj'));
+            id = typeObj.id;
+            $('#deleTypeModalTrue').modal('show');
+        })
+        // 真删除前台操作
+        $('#deleTypeBtnTrue').on('click', function () {
+            $('#deleTypeModalTrue').modal('hide');
+            if ('' == $('#adminPsw').val() || '' == $('#captcha').val()) {
+                showAlert('alert-danger', '密码或验证码不能为空', 800);
+                return;
+            }
+            $.ajax({
+                type: 'get',
+                url: "{:url('goods/deleteGoodsTrue')}",
+                dataType: 'json',
+                data: {
+                    adminId: $('#adminId').val(),
+                    password: $('#adminPsw').val(),
+                    captcha: $('#captcha').val(),
+                    typeId: id
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('goods/goGoodsTypeListPage')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>

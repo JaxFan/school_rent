@@ -1,0 +1,138 @@
+{layout name="public:layout"}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success bg-success" style="padding: 10px;">用户详情</h3>
+
+<table class="table table-default table-hover text-center table-bordered" style="width: 60%;">
+    <tr>
+        <td><strong>id</strong></td>
+        <td>{$user.id}</td>
+        <td><strong>姓名</strong></td>
+        <td>{$user.name}</td>
+        <td><strong>信誉</strong></td>
+        <td>{$user.level}</td>
+    </tr>
+    <tr>
+        <td><strong>用户类型</strong></td>
+        <td>
+            {eq name="$user.type" value='1'}
+                <span class="text-primary">学生</span>
+            {else/}
+                <span class="text-danger">注册商家</span>
+            {/eq}
+        </td>
+        <td><strong>状态</strong></td>
+        <td colspan="3">
+            {eq name="$user.status" value='1'}
+                <span class="text-primary">正常用户</span>
+            {else/}
+                <span class="text-danger">黑名单用户</span>
+            {/eq}
+        </td>
+    </tr>
+    {eq name="$user.type" value="1"}
+        <tr>
+            <td><strong>用户真实姓名</strong></td>
+            <td>{$user.true_name}</td>
+            <td><strong>用户电话</strong></td>
+            <td>{$user.mobile}</td>
+            <td><strong>用户学号</strong></td>
+            <td>{$user.student_id}</td>
+        </tr>
+        <tr>
+            <td><strong>学校</strong></td>
+            <td colspan="2">{$user.school}</td>
+            <td><strong>用户地址</strong></td>
+            <td colspan="2">{$user.address}</td>
+        </tr>
+    {else/}
+        <tr>
+            <td><strong>经营者姓名/法定代表人</strong></td>
+            <td>{$user.true_name}</td>
+            <td><strong>商户名称</strong></td>
+            <td>{$user.shop_name}</td>
+            <td><strong>注册号</strong></td>
+            <td>{$user.register_id}</td>
+        </tr>
+        <tr>
+            <td><strong>注册地址</strong></td>
+            <td colspan="5">{$user.address}</td>
+        </tr>
+    {/eq}
+</table>
+{eq name="$user.status" value="1"}
+    <a href="javascript:;"
+       class="btn btn-warning addBlackMenu"
+       userId='{$user.id}'>
+    加入黑名单</a>
+{else/}
+    <a type="button"
+       class="btn btn-primary recoverUser"
+       userId='{$user.id}'>
+    恢复为正常用户</a>
+{/eq}
+<a class="btn btn-primary" href="{:url('user/getUserList')}">返回用户列表页</a>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function (){
+        // 拉黑
+        $('.addBlackMenu').on('click', function () {
+            var userId = $(this).attr('userId')
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/deleteUser')}",
+                data: {
+                    userId: userId
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('user/getUserDetail', ['id'=>$user.id])}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+        // 恢复
+        $('.recoverUser').on('click', function () {
+            var userId = $(this).attr('userId')
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/recoverUser')}",
+                data: {
+                    userId: userId
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('user/getUserDetail', ['id'=>$user.id])}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+
+
+    });
+</script>

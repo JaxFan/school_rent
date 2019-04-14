@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$title|default="默认商品列表"}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/mainye.css">
+    <link rel="stylesheet" href="/static/css/ytppp.css">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/fontawesome.min.js"></script>
+
+    <script src="/static/js/html5shiv.js"></script>
+    <script src="/static/js/respond.min.js"></script>
+    <script src="/static/js/jquery.scrollLoading-min.js"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/static/css/shangping.css">
+    <link rel="stylesheet" href="/static/css/shangpinfenye.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_908657_sesdfmmdd2.css">
+    <style>
+        *{
+            margin: 0;
+            padding:0;
+            border: 0;
+        }
+        html,body{
+            width: 100%;
+            /*height: 100%;*/
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#wrap').css('display', 'none')
+        })
+    </script>
+</head>
+<body>
+<div id="wrap" style="position: fixed; width: 100%; height: 100%; background-color: #fff; z-index: 100; display: flex; justify-content: center; align-items: center;">
+    <img src="/static/images/timg_1.gif" style="width: 200px; height: 200px; margin: auto">
+</div>
+<!--顶部-->
+<header class="my_header">
+    <div class="my_content_center">
+        <div class="my_top">
+            <h1 class="my_logo">
+                <a href="javascript:;" style="text-decoration: none">
+                    <img src="/static/images/logo.png" alt="校园易租"/>
+                </a>
+            </h1>
+            <ul class="my_top_nav">
+                <li>
+                    <a href="{:url('index/index')}" style="text-decoration: none" class="my_top_nav_active">首页</a>
+                </li>
+                <li>
+                    <a href="{:url('trade/goTradeList')}" style="text-decoration: none">个人中心</a>
+                </li>
+            </ul>
+            <div class="my_search">
+                <form class="my_search_input" action="{:url('index/typeList')}" method="get">
+                    <input type="text" name="keywords" placeholder="搜索商品名">
+                    <button type="submit"><i class="iconfont icon-fangdajing"></i></button>
+                </form>
+            </div>
+            <ul class="my_login">
+                {if $Think.session.user_id}
+                <li>
+                    <a href="{:url('user/logout')}">
+                        <img src="/uploads/{$Think.session.user_avatar}" alt="" class="my_avatar">
+                        [注销]
+                    </a>
+                </li>
+                <li><a href="{:url('trade/goTradeList')}" style="text-decoration: none">我的订单</a></li>
+                <li><a href="{:url('trade/goSaveList')}">我的收藏</a></li>
+                {else/}
+                <li><a href="javascript:; "data-toggle="modal" data-target="#userLoginModal" style="text-decoration: none">登录</a></li>
+                <li><a href="{:url('user/register')}" style="text-decoration: none">注册</a></li>
+                {/if}
+            </ul>
+        </div>
+        <ul class="my_sub_nav">
+            {volist name="typeList" id="typeItem"}
+            <li>
+                <a href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="text-decoration: none"
+                    {eq name="typeItem.id" value="$Request.param.id"}class="my_sub_nav_active"{/eq}
+                >{$typeItem.name}</a>
+            </li>
+            {/volist}
+        </ul>
+    </div>
+</header>
+<!-- 用户登录 -->
+<div class="modal fade" id="userLoginModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">用户登录</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="loginForm">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">电话:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name="mobile" placeholder="电话" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">密码:</label>
+                        <div class="col-sm-5">
+                            <input type="password" class="form-control" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">验证码:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name="captcha" placeholder="验证码">
+                        </div>
+                        <div class="col-sm-4">
+                            <img onclick="this.src='{:captcha_src()}'" width="150" src="{:captcha_src()}" alt="captcha" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="loginBtn" class="btn btn-info btn-block">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="secbbc">
+    <div class="rightArea">
+        <div class="hr_7">
+        </div>
+        <div class="product_title">
+            <h3>{$title}</h3>
+        </div>
+        <div class="shuma1pai sec6Tu">
+            {volist name="goodsList" id="item"}
+            <!-- 循环-->
+            <a href="{:url('index/goodsDetail', ['id'=>$item.id])}">
+                <div class="shuma11 fangKuai">
+                    <div class="fangkuaiNei">
+                        <div class="shangshang">
+                            {eq name="item.image" value=""}
+                            <img src="/static/images/loading.gif"/>
+                            {else/}
+                            <img class="xianSi scrollLoading"
+                                 style="background:url(http://www.zhangxinxu.com/study/image/loading.gif) no-repeat center;"
+                                 data-url="/uploads/{$item.image}"
+                                 src="/static/images/loading.gif"/>
+                            {/eq}
+                        </div>
+                        <div class="xiaxia">
+                            <div class="goods_price text-left">
+                                ￥<strong>{$item.price}</strong><span class="hot_goods">热门租赁</span>
+                            </div>
+                            <div class="goods_name text-left">{$item.name|getArtContent}</div>
+                            <div class="rent_person_pay_num">
+                                <div class="rent_person">
+                                    {$item.user_id|getUserName}
+                                </div>
+                                <div class="pay_num">{$item.id|getLendNum}人已经租赁</div>
+                            </div>
+                            <div class="goods_score text-right">{$item.score}分</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {/volist}
+        </div>
+    </div>
+</section>
+<div style="clear:both"></div>
+<!-- 底端-->
+<section class="foot baibeijing">
+    <div class="foz">
+        <div>
+            <a href="https://www.suse.edu.cn/" class="icovr " title data-target="tooltip" data-placement="bottom" data-original-title="HTML5">
+                <strong><i class="fa fa-html5"></i></strong>
+            </a>
+        </div>
+        <div class="foot_wenzi">
+            <p>©&nbsp;2018 四川理工学院挑战不可能有限责任团队</p>
+            <p>
+                <small>
+                    <i class="fa fa-building-o " aria-hidden="true"></i>
+                    &nbsp;&nbsp;四川省宜宾市翠屏区白塔路一号A11-307
+                </small>
+            </p>
+            <h4>
+                <strong>
+                    <span style="color: lightcoral"><i class="fa fa-phone"></i>
+                    &nbsp;18783298132</span>
+                </strong>
+            </h4>
+            <p>
+                <small>
+                    <i class="fa fa-shield"></i>
+                    &nbsp;&nbsp;四TCP备15012039号
+                </small>
+            </p>
+        </div>
+    </div>
+
+</section>
+<script>
+    $(function(){
+        $(".scrollLoading").scrollLoading();
+        $('#loginBtn').on('click', function () {
+            $('#userLoginModal').modal('hide')
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/checkLogin')}",
+                data: $('#loginForm').serialize(),
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-danger', data.msg, 1000).then(function () {
+                                window.location.href="{:url('index/index')}"
+                            })
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+</body>
+</html>

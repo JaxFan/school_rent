@@ -1,0 +1,285 @@
+{layout name="public:layout"}
+
+<h2 class="text-success bg-success" style="padding: 10px;">{$title|default="默认标题"}</h2>
+
+<div  style="padding: 10px 0;">
+    <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('trade/goTradeList')}">
+        <div class="form-group">
+            <select name="status" class="form-control">
+                <option value="" {eq name="status" value=""}selected{/eq}>选择交易状态</option>
+                <option value="1" {eq name="status" value="1"}selected{/eq}>已完成</option>
+                <option value="0" {eq name="status" value="0"}selected{/eq}>正在进行中</option>
+                <option value="-1" {eq name="status" value="-1"}selected{/eq}>失败</option>
+            </select>
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-default table-hover text-center table-bordered">
+    <tr class="success">
+        <td>#</td>
+        <td>物品名</td>
+        <td>物品单价</td>
+        <td>购买数量</td>
+        <td>剩余数量</td>
+        <td>花费</td>
+        <td>提供人</td>
+        <td>交易状态</td>
+        <td colspan="2">操作</td>
+    </tr>
+    {volist name="dealList" id="item"}
+    <tr>
+        <td>{$item.id}</td>
+        <td>{$item.goods_id|getGoodsName}</td>
+        <td>{$item.goods_id|getGoodsPrice}</td>
+        <td>{$item.buy_num}</td>
+        <td>
+            <span class="text-danger">{$item.goods_id|getGoodsNum}</span>
+        </td>
+        <td>{$item.buy_spend}</td>
+        <td>{$item.rent_id}</td>
+        <td>
+            {switch $item.status }
+                {case 1 }
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success active progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        100%
+                    </div>
+                </div>
+                {/case}
+                {case -1}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-danger active progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+                        0%
+                    </div>
+                </div>
+                {/case}
+                {default /}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-info active progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+                        50%
+                    </div>
+                </div>
+            {/switch}
+        </td>
+        <td>
+            {switch $item.status }
+            {case 1}
+            <a href="{:url('index/goodsDetail', ['id' => $item.goods_id])}" class="btn btn-success btn-xs Btn" data-toggle="popover" data-placement="top" title="友情提示" data-content="如果你喜欢此产品，点击继续租赁">继续购买</a>
+            <a class="btn btn-warning btn-xs commentBtn" goodsId="{$item.goods_id}">评论</a>
+            {/case}
+            {case -1}
+            <a class="btn btn-danger btn-xs Btn feedback" data-toggle="popover" data-placement="top" title="友情提示" data-content="如果你未收到物品，点击反馈">反馈</a>
+            <a class="btn btn-warning btn-xs commentBtn" goodsId="{$item.goods_id}">评论</a>
+            {/case}
+            {default /}
+            <a dealId="{$item.id}" class="btn btn-info btn-xs Btn sureGet" data-toggle="popover" data-placement="top" title="友情提示" data-content="如果你已收到物品，点击签收">签收</a>
+            <a class="btn btn-warning btn-xs commentBtn" goodsId="{$item.goods_id}">评论</a>
+            {/switch}
+        </td>
+    </tr>
+    {/volist}
+</table>
+
+<div style="text-align: center">
+    {$dealList|raw}
+</div>
+
+<div id="feedbackModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">反馈</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="" method="">
+                    <input type="hidden" id="username" value="{$Think.session.user_name}">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">反馈</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" id="feedbackContent">在这里你可以发送你未找到物品的信息，或者对我们提出宝贵意见</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="sbumitBtn">提交</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="commentModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">评论</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="" method="" id="commentForm">
+                    <input type="hidden" name="userid" value="{$Think.session.user_id}">
+                    <input type="hidden" name="username" value="{$Think.session.user_name}">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">评论</label>
+                        <div class="col-sm-10">
+                            <select id="comment_level" class="form-control">
+                                <option value="">请选择评论等级</option>
+                                <option value="3">满意</option>
+                                <option value="2">一般</option>
+                                <option value="1">不满意</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">评论</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" id="commentContent"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="commentBtn">提交</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    $(function () {
+        
+        $('.Btn').on('mouseover', function () {
+            $(this).popover('show')
+        })
+        $('.Btn').on('mouseout', function () {
+            $(this).popover('hide')
+        })
+        
+        $('.feedback').on('click', function () {
+            $('#feedbackModal').modal('show')
+        })
+        
+        $('#sbumitBtn').on('click', function () {
+            $('#feedbackModal').modal('hide')
+            $.ajax({
+                type: 'post',
+                url: "{:url('trade/handleFeedback')}",
+                data: {
+                    update_person: $('#username').val(),
+                    create_person: $('#username').val(),
+                    content: $('#feedbackContent').val()
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('trade/goTradeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+
+        var goodsId = ''
+        $('.commentBtn').on('click', function () {
+            goodsId = $(this).attr('goodsId')
+            $('#commentModal').modal('show')
+        })
+        $('#commentBtn').on('click', function () {
+            $('#commentModal').modal('hide')
+            $.ajax({
+                type: 'post',
+                url: "{:url('trade/handleComment')}",
+                data: {
+                    goods_id: goodsId,
+                    user_id: $("#commentForm input[name='userid']").val(),
+                    update_person: $("#commentForm input[name='username']").val(),
+                    create_person: $("#commentForm input[name='username']").val(),
+                    content: $('#commentContent').val(),
+                    comment_level: $('#comment_level option:selected').val()
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('trade/goCommentList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+
+        // 签收
+        $('.sureGet').click(function () {
+            var dealId = $(this).attr('dealId')
+            $.ajax({
+                type: 'post',
+                url: "{:url('trade/sureGet')}",
+                data: {
+                    id: dealId
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('trade/goTradeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>
+

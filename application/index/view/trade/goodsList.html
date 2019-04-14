@@ -1,0 +1,383 @@
+{layout name="public:layout"}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-center text-success">用户列表</h3>
+<div  style="padding: 10px 0;">
+
+    <form class="form-inline" style="display: inline-block" method="post" action="{:url('trade/goGoodsList')}">
+        <div class="form-group">
+            <input type="text" name="keywords" class="form-control" placeholder="请输入用户名" value="{$keywords}">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+
+    <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('trade/goGoodsList')}">
+        <div class="form-group">
+            <select name="type_id" class="form-control">
+                <option value="">选则物品类型</option>
+                {volist name="typeList" id="typeItem"}
+                <option value="{$typeItem.id}"
+                        {eq name="typeId" value="$typeItem.id"}selected{/eq}>
+                {$typeItem.name}
+                </option>
+                {/volist}
+            </select>
+            <button type="submit" class="btn btn-default btn-primary">查询</button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-default table-hover text-center table-bordered">
+    <tr>
+        <td>#</td>
+        <td>物品名</td>
+        <td>类型</td>
+        <td>物品单价（元）</td>
+        <td>物品总数</td>
+        <td>可借时间</td>
+        <td>提供人</td>
+        <td>状态</td>
+        <td colspan="3">操作</td>
+    </tr>
+    {volist name="goodsList" id="goods" empty="$empty"}
+    <tr>
+        <td>{$goods.id}</td>
+        <td>{$goods.name}</td>
+        <td>{$goods.type_id|getGoodsTypeName}</td>
+        <td>{$goods.price}</td>
+        <td>{$goods.lend_total}</td>
+        <td>{$goods.lend_time}</td>
+        <td>{$goods.user_id|getUserName}</td>
+        <td>
+            {eq name="$goods.status" value="1"}
+            <span class="text-primary">可租赁</span>
+            {else/}
+            <span class="text-danger">禁用</span>
+            <button
+                    goodsId="{$goods.id}"
+                    class="btn btn-info btn-xs recover">
+                恢复
+            </button>
+            {/eq}
+        </td>
+        <td>
+            <button
+                    goodsDesc="{$goods.describe}"
+                    class="btn btn-info btn-xs describeBtn">
+                物品描述
+            </button>
+        </td>
+        <td>
+            <button
+                    class="btn btn-success btn-xs modifyBtn"
+                    goodsObj="{$goods}">
+                修改信息
+            </button>
+        </td>
+        <td>
+            <button
+                    class="btn btn-warning btn-xs deleGoodsBtn"
+                    goodsObj="{$goods}">
+                物品禁用
+            </button>
+        </td>
+    </tr>
+    {/volist}
+</table>
+
+<div style="text-align: center">
+    {$goodsList|raw}
+</div>
+
+<!-- 增加用户按钮 -->
+<a class="btn btn-primary" href="{:url('trade/goAddGoods')}">增加物品</a>
+
+<!-- 详情模态框 -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">物品描述</h4>
+            </div>
+            <div class="modal-body" id="content"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除模态框 -->
+<div id="deleGoodsModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center">禁用将使当前物品<strong>不能被出租</strong></p>
+                <button type="button" class="btn btn-primary" id="deleGoodsBtn">确定</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 修改模态框 -->
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改物品信息</h4>
+            </div>
+            <div class="modal-body" id="modifyConent">
+                <form class="form-horizontal" id="goodsForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">物品名:</label>
+                        <div class="col-sm-5">
+                            <input name="name" type="text" class="form-control" placeholder="请输入物品名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">物品图片:</label>
+                        <div class="col-sm-5">
+                            <input type="file" name="image">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">价格:</label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control" name="price" placeholder="请输入单价（单位：元）">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">选择物品分类:</label>
+                        <div class="col-sm-2">
+                            <select id="type_id" class="form-control">
+                                <option value="">请选择可租物品分类</option>
+                                {volist name="typeList" id="type"}
+                                <option value="{$type.id}">{$type.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">可租物品件数</label>
+                        <div class="col-sm-2">
+                            <select id="lend_total" class="form-control">
+                                <option value="">请选择可租物品件数（单位：件）</option>
+                                {for start="1" end="11"}
+                                <option value="{$i}">{$i}</option>
+                                {/for}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">可租物品时间:</label>
+                        <div class="col-sm-2">
+                            <select id="lend_time" class="form-control">
+                                <option value="">请选择可租赁时间（单位：小时）</option>
+                                <option value="0.5">0.5</option>
+                                <option value="2">2</option>
+                                <option value="6">6</option>
+                                <option value="12">12</option>
+                                <option value="24">24</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">配送方式:</label>
+                        <div class="col-sm-2">
+                            <select id="distribution" class="form-control">
+                                <option value="">请选择配送方式</option>
+                                <option value="自取">自取</option>
+                                <option value="送货上门">送货上门</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">商品描述:</label>
+                        <div class="col-sm-9">
+                            <div id="editorHead" class="toolbar" style="border: 1px solid #ccc"></div>
+                            <div style="padding: 5px 0; color: #ccc"></div>
+                            <div id="editorBody" class="text" style="border: 1px solid #ccc; min-height: 450px;">
+                                <p>请输入商品描述</p>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            var E = window.wangEditor;
+                            var editor = new E('#editorHead', '#editorBody');
+                            // 配置服务器端地址
+                            editor.customConfig.uploadImgServer = "{:url('admin/editor/upload')}";
+                            // 将图片大小限制为 3M
+                            editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024;
+                            // 限制一次最多上传 5 张图片
+                            editor.customConfig.uploadImgMaxLength = 5;
+                            // 配置编辑区域的 z-index
+                            editor.customConfig.zIndex = 1;
+                            editor.create();
+                        </script>
+                    </div>
+                    <input type="hidden" name="userName" value="{$Think.session.user_name}">
+                    <input type="hidden" name="goods_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="modifyBtn">修改</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    var id =0;
+    $(function () {
+        // 预览文章
+        $('.describeBtn').on('click', function () {
+            var goodsDesc = $(this).attr('goodsDesc');
+            $('#detailModal').modal('show');
+            $('#content').html(goodsDesc);
+        })
+
+        // 商品修改弹窗
+        $('.modifyBtn').on('click', function () {
+            var goodsJson = JSON.parse($(this).attr('goodsObj'));
+
+            $("#goodsForm input[name='goods_id']").val(goodsJson.id)
+            $("#goodsForm input[name='name']").val(goodsJson.name)
+            $("#goodsForm input[name='price']").val(goodsJson.price)
+            $("#type_id option[value='"+(goodsJson.type_id)+"']").attr("selected","selected")
+            $("#lend_total option[value='"+(goodsJson.lend_total)+"']").attr("selected","selected")
+            $("#lend_time option[value='"+(goodsJson.lend_time)+"']").attr("selected","selected")
+            $("#distribution option[value='"+(goodsJson.distribution)+"']").attr("selected","selected")
+            editor.txt.html(goodsJson.describe)
+
+            $('#modifyModal').modal('show');
+        })
+
+        // 物品修改发布
+        $('#modifyBtn').on('click', function () {
+            var formContent = new FormData();
+            formContent.append('id', $("#goodsForm input[name='goods_id']").val());
+            formContent.append('name', $("#goodsForm input[name='name']").val());
+            formContent.append('image', $("#goodsForm input[name='image']").get(0).files[0]);
+            formContent.append('price', $("#goodsForm input[name='price']").val());
+            formContent.append('type_id', $('#type_id option:selected').val());
+            formContent.append('lend_total', $("#lend_total option:selected").val());
+            formContent.append('lend_time', $("#lend_time option:selected").val());
+            formContent.append('distribution', $("#distribution option:selected").val());
+            formContent.append('describe', editor.txt.html());
+            formContent.append('update_person', $("#goodsForm input[name='userName']").val());
+            $('#modifyModal').modal('hide');
+            $.ajax({
+                type: 'post',
+                url: "{:url('admin/goods/saveGoods')}",
+                processData: false,
+                contentType: false,
+                data: formContent,
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('index/trade/goTradeList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+
+            })
+        })
+
+        // 显示假删除模态框
+        $('.deleGoodsBtn').on('click', function () {
+            var goodsJson = JSON.parse($(this).attr('goodsObj'));
+            id = goodsJson.id;
+            if (0 == goodsJson.status) {
+                showAlert('alert-danger', '该物品已被禁用', 1000);
+                return;
+            }
+            $('#deleGoodsModal').modal('show');
+        })
+
+        // 假删除前台操作
+        $('#deleGoodsBtn').on('click', function () {
+            $('#deleGoodsModal').modal('hide');
+            $.ajax({
+                type: 'get',
+                url: "{:url('admin/goods/deleteGoods')}",
+                dataType: 'json',
+                data: {
+                    goodsId: id
+                },
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('index/trade/goGoodsList')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+        // 撤销假删除
+        $('.recover').on('click', function () {
+            var id = JSON.parse($(this).attr('goodsId'));
+            $.ajax({
+                type: 'get',
+                url: "{:url('admin/goods/recoverGoods')}",
+                dataType: 'json',
+                data: {
+                    goodsId: id
+                },
+                success: function (data) {
+                    if (1 == data.status) {
+                        showAlert('alert-success', data.msg, 800).then(function () {
+                            window.location.href="{:url('index/trade/goGoodsList')}";
+                        });
+                    } else {
+                        showAlert('alert-danger', data.msg, 800);
+                    }
+                }
+            })
+        })
+    })
+</script>

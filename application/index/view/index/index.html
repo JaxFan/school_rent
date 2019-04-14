@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>校园易租</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/mainye.css">
+    <link rel="stylesheet" href="/static/css/ytppp.css">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/fontawesome.min.js"></script>
+
+    <script src="/static/js/html5shiv.js"></script>
+    <script src="/static/js/respond.min.js"></script>
+    <script src="/static/js/jquery.scrollLoading-min.js"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_908657_sesdfmmdd2.css">
+    <style>
+        *{
+            margin: 0;
+            padding:0;
+            border: 0;
+        }
+        html, body{
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#wrap').css('display', 'none');
+            $.ajax({
+                type: 'post',
+                url: "{:url('index/getNotice')}",
+                success: function (data) {
+                    if (data.status == 1) {
+                        $('#noticeModalContent').html(data.notice.content)
+                        $('#noticeModal').modal('show')
+                    } else {
+                        $('#noticeModal').modal('hide')
+                    }
+                }
+            })
+        })
+    </script>
+</head>
+<body style="" class="">
+    <div id="wrap" style="position: fixed; width: 100%; height: 100%; background-color: #fff; z-index: 100; display: flex; justify-content: center; align-items: center;">
+        <img src="/static/images/timg_1.gif" style="width: 200px; height: 200px; margin: auto">
+    </div>
+
+    <!--公告弹框-->
+    <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">公告</h4>
+                </div>
+                <div class="modal-body" id="noticeModalContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 头部 -->
+    <header class="my_header">
+        <div class="my_content_center">
+            <div class="my_top">
+                <h1 class="my_logo">
+                    <a href="javascript:;" style="text-decoration: none">
+                        <img src="/static/images/logo.png" alt="校园易租"/>
+                    </a>
+                </h1>
+                <ul class="my_top_nav">
+                    <li>
+                        <a href="{:url('index/index')}" style="text-decoration: none" class="my_top_nav_active">首页</a>
+                    </li>
+                    <li>
+                        <a href="{:url('trade/goTradeList')}" style="text-decoration: none">个人中心</a>
+                    </li>
+                </ul>
+                <div class="my_search">
+                    <form class="my_search_input" action="{:url('index/typeList')}" method="get">
+                        <input type="text" name="keywords" placeholder="搜索商品名">
+                        <button type="submit" ><i class="iconfont icon-fangdajing"></i></button>
+                    </form>
+                </div>
+                <ul class="my_login">
+                    {if $Think.session.user_id}
+                    <li>
+                        <a href="{:url('user/logout')}">
+                            <img src="/uploads/{$Think.session.user_avatar}" alt="" class="my_avatar">
+                            [注销]
+                        </a>
+                    </li>
+                    <li><a href="{:url('trade/goTradeList')}" style="text-decoration: none">我的订单</a></li>
+                    <li><a href="{:url('trade/goSaveList')}" style="text-decoration: none">我的收藏</a></li>
+                    {else/}
+                    <li><a href="javascript:; "data-toggle="modal" data-target="#userLoginModal" style="text-decoration: none">登录</a></li>
+                    <li><a href="{:url('user/register')}" style="text-decoration: none">注册</a></li>
+                    {/if}
+                </ul>
+            </div>
+            <ul class="my_sub_nav">
+                {volist name="typeList" id="typeItem"}
+                <li>
+                    <a target="_blank" href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" class="my_sub_nav_active" style="text-decoration: none">{$typeItem.name}</a>
+                </li>
+                {/volist}
+            </ul>
+        </div>
+    </header>
+    <!--中部-->
+    <section class="sec1 baiBeijing">
+        <!-- 分类与滚动-->
+        <div class="baitiao"></div>
+        <div class="shang3 allzhong">
+            <!-- 广告轮播 -->
+            <div id="ad-carousel" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#ad-carousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#ad-carousel" data-slide-to="1"></li>
+                    <li data-target="#ad-carousel" data-slide-to="2"></li>
+                    <li data-target="#ad-carousel" data-slide-to="3"></li>
+                    <li data-target="#ad-carousel" data-slide-to="4"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <img class="scrollLoading" src="/static/images/4.jpg" alt="1 slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <p>
+                                    <a class="btn btn-lg btn-primary" href="#" role="button" target="_blank">点击了解</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="scrollLoading" src="/static/images/5.jpg" alt="2 slide">
+
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <p>
+                                    <a class="btn btn-lg btn-primary" href="#" role="button" target="_blank">点击了解</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="scrollLoading" src="/static/images/6.jpg" alt="3 slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <p>
+                                    <a class="btn btn-lg btn-primary" href="#" role="button" target="_blank">点击了解</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="scrollLoading" src="/static/images/7.jpg" alt="4 slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <p>
+                                    <a class="btn btn-lg btn-primary" href="#" role="button" target="_blank">点击了解</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="scrollLoading" src="/static/images/8.jpg" alt="5 slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <p>
+                                    <a class="btn btn-lg btn-primary" href="#" role="button" target="_blank">点击了解</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="left carousel-control" href="#ad-carousel" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#ad-carousel" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+            <!-- 侧边导航列表 -->
+            <div class="nava">
+                {volist name="typeList" id="typeItem"}
+                <div class="nava-li">
+                   <a href="#{$i}" style="text-decoration: none; color: #fff">{$typeItem.name}</a>
+                </div>
+                {/volist}
+            </div>
+        </div>
+    </section>
+
+    {volist name="typeList" id="typeItem"}
+    <section class="sec2 baiBeijing">
+        <div class="sec22">
+            <div class="sec6Top">
+                <div class="sec6topTop">
+                    <a name="1" id="{$typeItem.id}"><img src="/static/images/title-top.png" alt=""/></a>
+                    <p class="anText1">
+                        <a target="_blank" href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="display: inline-block; text-decoration: none;">{$typeItem.name}</a>
+                    </p>
+                </div>
+            </div>
+            {volist name="goodsAllArray" id="goodsItem"}
+            {eq name="$goodsItem.type_id" value="$typeItem.id"}
+            <div class="shuma1pai sec6Tu">
+                {volist name="goodsItem.goods_list" id="item" offset="0" length='3'}
+                <a href="{:url('index/goodsDetail', ['id'=>$item.id])}">
+                    <div class="shuma11 fangKuai">
+                        <div class="fangkuaiNei">
+                            <div class="shangshang">
+                                {eq name="item.image" value=""}
+                                <img style="width: 20rem" src="/static/images/timg.gif"/>
+                                {else/}
+                                <img class="xianSi scrollLoading" src="/uploads/{$item.image}"/>
+                                {/eq}
+                            </div>
+                            <div class="xiaxia">
+                                <div class="goods_price text-left">
+                                    ￥<strong>{$item.price}</strong><span class="hot_goods">热门租赁</span>
+                                </div>
+                                <div class="goods_name text-left">{$item.name|getArtContent}</div>
+                                <div class="rent_person_pay_num">
+                                    <div class="rent_person">
+                                        {$item.user_id|getUserName}
+                                    </div>
+                                    <div class="pay_num">{$item.id|getLendNum}人已经租赁</div>
+                                </div>
+                                <div class="goods_score text-right">{$item.score}分</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {/volist}
+            </div>
+            <div class="sec6tuBottom  sec6Tu">
+                {volist name="goodsItem.goods_list" id="item" offset="3" length='3'}
+                <a href="{:url('index/goodsDetail', ['id'=>$item.id])}">
+                    <div class="shuma21 fangKuai">
+                        <div class="fangkuaiNei">
+                            <div class="shangshang">
+                                {eq name="item.image" value=""}
+                                <img style="width: 20rem" src="/static/images/timg.gif"/>
+                                {else/}
+                                <img class="xianSi scrollLoading" src="/uploads/{$item.image}"/>
+                                {/eq}
+                            </div>
+                            <div class="xiaxia">
+                                <div class="goods_price text-left">
+                                    ￥<strong>{$item.price}</strong><span class="hot_goods">热门租赁</span>
+                                </div>
+                                <div class="goods_name text-left">{$item.name|getArtContent}</div>
+                                <div class="rent_person_pay_num">
+                                    <div class="rent_person">
+                                        {$item.user_id|getUserName}
+                                    </div>
+                                    <div class="pay_num">{$item.id|getLendNum}人已经租赁</div>
+                                </div>
+                                <div class="goods_score text-right">{$item.score}分</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {/volist}
+            </div>
+            {/eq}
+            {/volist}
+        </div>
+    </section>
+    {if $i < count($typeList)}
+        <section class="hengfu1"></section>
+    {/if}
+    {/volist}
+
+    <section class="foot baibeijing">
+        <div class="foz">
+            <div class="foot_wenzi">
+                <p>©&nbsp;2018 四川理工学院挑战不可能有限责任团队</p>
+                <p>
+                    <small>
+                        <i class="fa fa-building-o " aria-hidden="true"></i>
+                        四川省宜宾市翠屏区白塔路一号A11-307
+                    </small>
+                </p>
+                <h4>
+                    <strong>
+                       <span style="color: lightcoral">
+                           <i class="fa fa-phone"></i>
+                           18783298132
+                       </span>
+                    </strong>
+                </h4>
+                <p>
+                    <small><i class="fa fa-shield"></i>四TCP备15012039号</small>
+                </p>
+            </div>
+        </div>
+
+    </section>
+
+
+
+    <img src="/static/images/pic1.jpg" class="beiJing1 beiJing"/>
+    <img src="/static/images/pic2.jpg" alt="" class="beiJing2 beiJing"/>
+    <img src="/static/images/img4.jpg" alt="" class="beiJing3 beiJing"/>
+    <img src="/static/images/img5.jpg" alt="" class="beiJing4 beiJing"/>
+
+    <!-- 警告框 -->
+    <div class="alert fade" style="display: none; z-index: 20; position: fixed; top: 200px; left: 50%; width: 500px; margin-left: -200px">
+        <div class="alertMsg text-center"></div>
+    </div>
+
+<!-- 用户登录 -->
+<div class="modal fade" id="userLoginModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">用户登录</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="loginForm">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">电话:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name="mobile" placeholder="电话" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">密码:</label>
+                        <div class="col-sm-5">
+                            <input type="password" class="form-control" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">验证码:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name="captcha" placeholder="验证码">
+                        </div>
+                        <div class="col-sm-4">
+                            <img onclick="this.src='{:captcha_src()}'" width="150" src="{:captcha_src()}" alt="captcha" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="loginBtn" class="btn btn-info btn-block">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').css('display', 'block');
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                $('.alert').css('display', 'none');
+                resolve();
+            }, alertTime)
+        })
+    }
+
+    function myshow(){
+        $(".gun").eq(index).find(".yunHaizi").animate({"top":"30%","opacity":"1"},1000)
+    }
+    var index=0;
+    $(function () {
+        $(".scrollLoading").scrollLoading();
+
+        myshow();
+
+        $(window).scroll(function(){
+            if($(document).scrollTop()>0&&$(document).scrollTop()<2420){
+                $(".beiJing1").css({"z-index":-1});
+                $(".beiJing2").css({"z-index":-2});
+                $(".beiJing3").css({"z-index":-3});
+                $(".beiJing4").css({"z-index":-4})
+            }
+            else if($(document).scrollTop()>2421&&$(document).scrollTop()<3604){
+                $(".beiJing1").css({"z-index":-3});
+                $(".beiJing2").css({"z-index":-1});
+                $(".beiJing3").css({"z-index":-2});
+                $(".beiJing4").css({"z-index":-4})
+            }
+            else if($(document).scrollTop()>3604&&$(document).scrollTop()<6400){
+                $(".beiJing1").css({"z-index":-2});
+                $(".beiJing2").css({"z-index":-3});
+                $(".beiJing3").css({"z-index":-1});
+                $(".beiJing4").css({"z-index":-4})
+            }
+            else if($(document).scrollTop()>6400&&$(document).scrollTop()<8000){
+                $(".beiJing1").css({"z-index":-2});
+                $(".beiJing2").css({"z-index":-3});
+                $(".beiJing3").css({"z-index":-4});
+                $(".beiJing4").css({"z-index":-1})
+            }
+        })
+
+        $('#loginBtn').on('click', function () {
+            $('#userLoginModal').modal('hide')
+            $.ajax({
+                type: 'post',
+                url: "{:url('user/checkLogin')}",
+                data: $('#loginForm').serialize(),
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-danger', data.msg, 1000).then(function () {
+                                window.location.href="{:url('index/index')}"
+                            })
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000)
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+</body>
+</html>

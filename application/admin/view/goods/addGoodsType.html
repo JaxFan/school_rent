@@ -1,0 +1,62 @@
+{layout name="public:layout"}
+
+<!-- 警告框 -->
+<div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
+    <div class="alertMsg text-center"></div>
+</div>
+
+<h3 class="text-success bg-success" style="padding: 10px;">增加商品分类</h3>
+
+<form class="form-inline" id="addGoodsTypeForm">
+    <div class="form-group">
+        <div class="col-sm-2">
+            <input name="name" type="text" class="form-control" placeholder="请输入要增加的分类">
+        </div>
+    </div>
+
+    <input type="hidden" name="create_person" value="{$Think.session.admin_id}">
+    <input type="hidden" name="update_person" value="{$Think.session.admin_id}">
+    <button type="button" id="submitBtn" class="btn btn-default btn-success">增加分类</button>
+</form>
+
+<script type="text/javascript">
+    // 封装警告框方法
+    function showAlert(alertStyle, alertText, alertTime) {
+        $('.alert').addClass(alertStyle);
+        $('.alertMsg').text(alertText);
+        $('.alert').removeClass('fade').addClass('in');
+
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                $('.alert').addClass('fade').removeClass('in');
+                resolve();
+            }, alertTime)
+        })
+    }
+    $(function () {
+        $('#submitBtn').on('click', function () {
+            $.ajax({
+                type: 'post',
+                url: "{:url('goods/addGoodsType')}",
+                dataType: 'json',
+                data: $('#addGoodsTypeForm').serialize(),
+                success: function (data) {
+                    switch (data.status) {
+                        case 1:
+                            showAlert('alert-success', data.msg, 1000).then(function () {
+                                window.location.href="{:url('goods/goGoodsTypeListPage')}";
+                            });
+                            break;
+                        case 0:
+                        case -1:
+                            showAlert('alert-danger', data.msg, 1000);
+                            break;
+                        default:
+                            showAlert('alert-danger', data.msg, 1000);
+                            break;
+                    }
+                }
+            })
+        })
+    })
+</script>

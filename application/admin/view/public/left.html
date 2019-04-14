@@ -1,0 +1,59 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h2 class="panel-title">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-home"></span>后台首页</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('index/index')}">后台首页</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab">
+            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>用户管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('user/getUserList')}">用户列表</a></li>
+                <li class="list-group-item"><a href="{:url('user/addUser')}">增加用户</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab">
+            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>商品管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('goods/goodsList')}">商品列表</a></li>
+                <li class="list-group-item"><a href="{:url('goods/goAddGoods')}">增加商品</a></li>
+                <li class="list-group-item"><a href="{:url('goods/goGoodsTypeListPage')}">物品分类列表</a></li>
+                <li class="list-group-item"><a href="{:url('goods/goAddGoodsTypePage')}">增加物品分类</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab">
+            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
+                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>网站管理</a>
+            </h2>
+        </div>
+        <div class="panel-collapse collapse in" role="tabpanel">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{:url('site/siteMange')}">站点管理</a></li>
+                <li class="list-group-item"><a href="{:url('notice/getNoticeList')}">公告管理</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
