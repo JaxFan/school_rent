@@ -11,6 +11,7 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/fontawesome.min.js"></script>
 
+
     <script src="/static/js/html5shiv.js"></script>
     <script src="/static/js/respond.min.js"></script>
     <script src="/static/js/jquery.scrollLoading-min.js"></script>
@@ -50,7 +51,7 @@
         })
     </script>
 </head>
-<body style="" class="">
+<body style="overflow-x:hidden" class="">
     <div id="wrap" style="position: fixed; width: 100%; height: 100%; background-color: #fff; z-index: 100; display: flex; justify-content: center; align-items: center;">
         <img src="/static/images/timg_1.gif" style="width: 200px; height: 200px; margin: auto">
     </div>
@@ -90,7 +91,7 @@
                 <div class="my_search">
                     <form class="my_search_input" action="{:url('index/typeList')}" method="get">
                         <input type="text" name="keywords" placeholder="搜索商品名">
-                        <button type="submit" ><i class="iconfont icon-fangdajing"></i></button>
+                        <button type="submit"  style="width: 45px; height: 30px;" ><i class="iconfont icon-fangdajing" style="padding: 10px;"></i></button>
                     </form>
                 </div>
                 <ul class="my_login">
@@ -119,7 +120,7 @@
         </div>
     </header>
     <!--中部-->
-    <section class="sec1 baiBeijing">
+    <section class="sec1 ">
         <!-- 分类与滚动-->
         <div class="baitiao"></div>
         <div class="shang3 allzhong">
@@ -202,25 +203,65 @@
             </div>
         </div>
     </section>
+    <section class="zdh-m">
+    	<div class="zdh-m-1">
+    		<a href="#1">
+    		<div class="zdh-mz">
+    			<div class="zdh-m-2"><img src="/static/images/m-qc.png" style="width: 150px;margin-top: 10px;"></div>
+    			<div class="zdh-m-3">器材专区
+    			</div>
+    		</div>
+    		</a>
+    		<a href="#2">
+    		<div class="zdh-mz">
+    			<div class="zdh-m-2"><img src="/static/images/m-sm.png" style="width: 150px;margin-top: 10px;"></div>
+    			<div class="zdh-m-3">数码专区</div>
+    		</div>
+    		</a>
+    		<a href="#3">
+    		<div class="zdh-mz">
+    			<div class="zdh-m-2"><img src="/static/images/m-fz.png" style="width: 150px;margin-top: 10px;"></div>
+    			<div class="zdh-m-3"> 服装专区</div>
+    		</div>
+    		</a>
+    		<a href="#4">
+    		<div class="zdh-mz">
+    			<div class="zdh-m-2"><img src="/static/images/m-ysj.png" style="width: 150px;margin-top: 34px;"></div>
+    			<div class="zdh-m-3">优商家</div>
+    		</div>
+    		</a>
+    	</div>
+    </section>
 
     {volist name="typeList" id="typeItem"}
     <section class="sec2 baiBeijing">
         <div class="sec22">
             <div class="sec6Top">
+            	 <a name="1" id="{$typeItem.id}"></a>
+            	<div class="sec6Top-m">
+            	<div class="dh-m">
+					<div>
+						<div class="dh-m-1">{$typeItem.name}
+						
+						</div>
+						<div style="border: 2px solid #27faf3;width: 100%;"></div>
+					</div>
+				</div>
                 <div class="sec6topTop">
-                    <a name="1" id="{$typeItem.id}"><img src="/static/images/title-top.png" alt=""/></a>
+                   
                     <p class="anText1">
-                        <a target="_blank" href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="display: inline-block; text-decoration: none;">{$typeItem.name}</a>
+                        <a target="_blank" href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="display: inline-block; text-decoration: none;">更多>></a>
                     </p>
+                </div>
                 </div>
             </div>
             {volist name="goodsAllArray" id="goodsItem"}
             {eq name="$goodsItem.type_id" value="$typeItem.id"}
             <div class="shuma1pai sec6Tu">
-                {volist name="goodsItem.goods_list" id="item" offset="0" length='3'}
+                {volist name="goodsItem.goods_list" id="item" offset="0" length='4'}
                 <a href="{:url('index/goodsDetail', ['id'=>$item.id])}">
                     <div class="shuma11 fangKuai">
-                        <div class="fangkuaiNei">
+                        <div class=" fangkuaiNei">
                             <div class="shangshang">
                                 {eq name="item.image" value=""}
                                 <img style="width: 20rem" src="/static/images/timg.gif"/>
@@ -247,7 +288,7 @@
                 {/volist}
             </div>
             <div class="sec6tuBottom  sec6Tu">
-                {volist name="goodsItem.goods_list" id="item" offset="3" length='3'}
+                {volist name="goodsItem.goods_list" id="item" offset="3" length='4'}
                 <a href="{:url('index/goodsDetail', ['id'=>$item.id])}">
                     <div class="shuma21 fangKuai">
                         <div class="fangkuaiNei">
@@ -281,7 +322,7 @@
         </div>
     </section>
     {if $i < count($typeList)}
-        <section class="hengfu1"></section>
+        <section class="hengfu1"><img img src="/static/images/hf.jpg" style="width: 1536px;"></section>
     {/if}
     {/volist}
 
@@ -313,10 +354,10 @@
 
 
 
-    <img src="/static/images/pic1.jpg" class="beiJing1 beiJing"/>
+    <!--<img src="/static/images/pic1.jpg" class="beiJing1 beiJing"/>
     <img src="/static/images/pic2.jpg" alt="" class="beiJing2 beiJing"/>
     <img src="/static/images/img4.jpg" alt="" class="beiJing3 beiJing"/>
-    <img src="/static/images/img5.jpg" alt="" class="beiJing4 beiJing"/>
+    <img src="/static/images/img5.jpg" alt="" class="beiJing4 beiJing"/>-->
 
     <!-- 警告框 -->
     <div class="alert fade" style="display: none; z-index: 20; position: fixed; top: 200px; left: 50%; width: 500px; margin-left: -200px">

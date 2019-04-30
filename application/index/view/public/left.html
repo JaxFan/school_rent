@@ -1,47 +1,216 @@
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+<!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
 
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            <h2 class="panel-title">
-                <span style="padding-right: 3px" class="glyphicon glyphicon-home"></span>订单管理</a>
-            </h2>
-        </div>
-        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{:url('trade/goTradeList')}">我的订单</a></li>
-            </ul>
+    <!--<div class="panel panel-info">-->
+        <!--<div class="panel-heading">-->
+            <!--<h2 class="panel-title">-->
+                <!--<span style="padding-right: 3px" class="glyphicon glyphicon-home"></span>订单管理</a>-->
+            <!--</h2>-->
+        <!--</div>-->
+        <!--<div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">-->
+            <!--<ul class="list-group">-->
+                <!--<li class="list-group-item"><a href="{:url('trade/goTradeList')}">我的订单</a></li>-->
+            <!--</ul>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="panel panel-info">-->
+        <!--<div class="panel-heading" role="tab">-->
+            <!--<h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">-->
+                <!--<span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>租赁管理</a>-->
+            <!--</h2>-->
+        <!--</div>-->
+        <!--<div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">-->
+            <!--<ul class="list-group">-->
+                <!--<li class="list-group-item"><a href="{:url('trade/goAddGoods')}">发布我的物品</a></li>-->
+                <!--<li class="list-group-item"><a href="{:url('trade/goGoodsList')}">我的租赁物品</a></li>-->
+                <!--<li class="list-group-item">-->
+                    <!--<a href="{:url('trade/goSaveList')}">我的收藏</a>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="panel panel-info">-->
+        <!--<div class="panel-heading" role="tab">-->
+            <!--<h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">-->
+                <!--<span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>个人管理</a>-->
+            <!--</h2>-->
+        <!--</div>-->
+        <!--<div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">-->
+            <!--<ul class="list-group">-->
+                <!--<li class="list-group-item"><a href="{:url('trade/goCommentList')}">我的评论</a></li>-->
+                <!--<li class="list-group-item"><a href="{:url('user/goMyInfoMange')}">我的资料</a></li>-->
+                <!--<li class="list-group-item"><a href="{:url('user/goResetPsw')}">修改密码</a></li>-->
+            <!--</ul>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<style>
+    .left_container{
+        width: 250px;
+        margin-left: -15px;
+        height: 1500px;
+        /*border: 2px solid #0ecdfd;*/
+        background: #eee;
+        /*margin-top: 20px;*/
+        float: left;
+
+    }
+    div {
+        display: block;
+
+    }
+    /*调整白色背景css*/
+.left_container_whitepanel{
+    background-color: #fff;
+    width: 80%;
+    height: 700px;
+    /*border: 3px solid indianred;*/
+    margin-left: 50px;
+    margin-top: 50px;
+
+}
+    .panel-group{
+        /*margin-bottom: 20px;*/
+        /*border: 1px solid chocolate;*/
+        margin-top: 50px;
+        /*background-color: #fff;*/
+        /*height: 700px;*/
+        padding-top: 20px;
+        width: 91%;
+        /*margin-left: 60px;*/
+    }
+    .panel-group .panel {
+        border-radius: 0;
+        /*border: 3px solid #a5cd4e;*/
+
+    }
+    /*调整矩形位置css*/
+    .panel-default{
+        /*border: 2px solid forestgreen;*/
+        width: 110%;
+        background-color: #fff;
+        /*margin-left: 10px;*/
+        /*overflow: hidden;*/
+        border-radius: 2px;
+
+    }
+    .panel-default .panel-heading {
+        /*background: #45bffe;*/
+        padding: 0;
+        height: 50px;
+        width: 100%;
+        /*border: 3px solid #28688c;*/
+        background-color: #0ecdfd;
+        /*margin-left: -2px;*/
+        /*border-radius: 2px;*/
+        /*overflow: hidden;*/
+    }
+    .panel-title a {
+        /*color: #fff;*/
+        display: block;
+        width: 100%;
+        height: 50px;
+        overflow: hidden;
+        /*padding: 0 5px;*/
+        text-align: left;
+        text-decoration: none;
+        /*border: 1px solid tomato;*/
+        margin: -5px;
+
+    }
+    .panel-title a :hover{
+
+    }
+
+    .pull-right {
+        height: 20px;
+        margin-top: 13px;
+        line-height: 20px;
+        overflow: hidden;
+        /*border: 3px solid orchid;*/
+
+    }
+    .panel-title a span {
+        font-size: 20px;
+        margin: 0 10px 0 15px;
+        /*border: 3px solid tomato;*/
+
+    }
+    .panel-title a span i {
+        font-size: 20px;
+    }
+
+    .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover
+    {
+
+        z-index: 2;
+        color: #fff;
+        background-color: #0ecdfd;
+        border-color: #0ecdfd;
+        text-decoration: none;
+        overflow: hidden;
+        width: 98%;
+    }
+    .list-group-item{
+    }
+    .list-group-item a:hover{
+        color: #0ecdfd;
+    }
+</style>
+<div class="left_container">
+    <!--left_container_whitepanel：作白色背景用-->
+    <div class="left_container_whitepanel">
+        <div class="panel-group" role="tablist">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"> <span class="iconfont icon-cc-user"></span> 个人中心 <span class="pull-right"><i class="iconfont icon-cc-down"></i></span></a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" >
+                    <ul class="list-group">
+                        <li class="list-group-item active"><a href="{:url('trade/goTradeList')}">我的订单</a></li>
+                        <li class="list-group-item "><a href="{:url('trade/goCommentList')}">我的评论</a></li>
+                        <li class="list-group-item "><a href="{:url('user/goMyInfoMange')}">我的资料</a></li>
+                        <!--<li class="list-group-item "><a href="#">发票信息</a></li>-->
+
+                        <li class="list-group-item "><a href="{:url('user/goResetPsw')}">修改密码</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingtwo">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsetwo"> <span class="iconfont icon-untitled25"></span> 租赁管理 <span class="pull-right"><i class="iconfont icon-cc-down"></i></span></a>
+                    </h4>
+                </div>
+                <div id="collapsetwo" class="panel-collapse collapse" role="tabpanel" >
+                    <ul class="list-group">
+                        <li class="list-group-item "><a href="{:url('trade/goAddGoods')}">发布我的物品</a></li>
+                        <li class="list-group-item "><a href="{:url('trade/goGoodsList')}">我的租赁物品</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingthree">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethree"> <span class="iconfont icon-zijinguanli"></span> 发票管理 <span class="pull-right"><i class="iconfont icon-cc-down"></i></span></a>
+                    </h4>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="panel panel-info">
-        <div class="panel-heading" role="tab">
-            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
-                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>租赁管理</a>
-            </h2>
-        </div>
-        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{:url('trade/goAddGoods')}">发布我的物品</a></li>
-                <li class="list-group-item"><a href="{:url('trade/goGoodsList')}">我的租赁物品</a></li>
-                <li class="list-group-item">
-                    <a href="{:url('trade/goSaveList')}">我的收藏</a>
-                </li>
-            </ul>
-        </div>
-    </div>
 
-    <div class="panel panel-info">
-        <div class="panel-heading" role="tab">
-            <h2 class="panel-title" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
-                <span style="padding-right: 3px" class="glyphicon glyphicon-cog"></span>个人管理</a>
-            </h2>
-        </div>
-        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{:url('trade/goCommentList')}">我的评论</a></li>
-                <li class="list-group-item"><a href="{:url('user/goMyInfoMange')}">我的资料</a></li>
-                <li class="list-group-item"><a href="{:url('user/goResetPsw')}">修改密码</a></li>
-            </ul>
-        </div>
-    </div>
 </div>
+
+
+
+
+
+
+
+
+
+

@@ -1,30 +1,89 @@
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            {if $Think.session.user_id}
-                <a class="navbar-brand">
-                    用户：{$Think.session.user_name|default="默认用户名"}
-                </a>
-            {/if}
-            <a href="{:url('index/index')}" class="navbar-brand" style="color: #1e88e5;" style="margin-left: 10px">返回首页</a>
-        </div>
+<!--<nav class="navbar navbar-default">-->
+    <!--<div class="container-fluid">-->
+        <!--&lt;!&ndash; Brand and toggle get grouped for better mobile display &ndash;&gt;-->
+        <!--<div class="navbar-header">-->
+            <!--{if $Think.session.user_id}-->
+                <!--<a class="navbar-brand">-->
+                    <!--用户：{$Think.session.user_name|default="默认用户名"}-->
+                <!--</a>-->
+            <!--{/if}-->
+            <!--<a href="{:url('index/index')}" class="navbar-brand" style="color: #1e88e5;" style="margin-left: 10px">返回首页</a>-->
+        <!--</div>-->
 
-        {if $Think.session.user_id}
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">个人设置 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">修改密码</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{:url('trade/goCommentList')}">我的评论</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{:url('trade/goTradeList')}">我的订单</a></li>
-                    </ul>
-                </li>
+        <!--{if $Think.session.user_id}-->
+        <!--<div class="collapse navbar-collapse">-->
+            <!--<ul class="nav navbar-nav navbar-right">-->
+                <!--<li class="dropdown">-->
+                    <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">个人设置 <span class="caret"></span></a>-->
+                    <!--<ul class="dropdown-menu">-->
+                        <!--<li><a href="#">修改密码</a></li>-->
+                        <!--<li role="separator" class="divider"></li>-->
+                        <!--<li><a href="{:url('trade/goCommentList')}">我的评论</a></li>-->
+                        <!--<li role="separator" class="divider"></li>-->
+                        <!--<li><a href="{:url('trade/goTradeList')}">我的订单</a></li>-->
+                    <!--</ul>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+        <!--{/if}-->
+    <!--</div>-->
+<!--</nav>-->
+<style>
+    .constant_header {
+        height: 100px;
+        background:#365459;
+        /*background: #3261fe;*/
+
+        position: relative;
+        /*z-index: 9999;*/
+        /*position:fixed;*/
+    }
+    .constant_main {
+        width: 1180px;
+        margin: 0 auto;
+    }
+    .constant_logo {
+        float: left;
+        /*border: solid 1px #a94442;*/
+        /*padding: 33px 60px 0 0;*/
+        position: absolute;
+
+    }
+    .constant_banner_ul {
+        float: left;
+        width: 730px;
+        padding: 0;
+        margin-left: 300px;
+        position: absolute;
+
+    }
+    .constant_banner_ul li {
+        height: 100px;
+        float: left;
+        color: white;
+        margin-left: 50px;
+    }
+    li {
+        list-style: none;
+    }
+</style>
+<nav class="constant_header">
+    <div class="constant_main">
+        <div class="constant_logo">
+            <a href="{:url('index/index')}" style="text-decoration: none" class="my_top_nav_active">
+                <img src="/static/images/logo.png" alt="校园易租"/>
+            </a>
+            <ul class="constant_banner_ul">
+                <li>你好呀</li>
+                <li>你好呀</li>
+                <li>你好呀</li>
+                <li>你好呀</li>
             </ul>
+            <!--右边再添上一个用户头像，不想写了，累-->
+
         </div>
-        {/if}
     </div>
+    <div></div>
+    <div></div>
+
 </nav>

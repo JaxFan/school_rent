@@ -39,14 +39,14 @@ class Trade extends Base
             $map[] = ['status', '=', $status];
         }
         $map[] = ['lend_id', '=', $userId];
-        // 获取数据
-        $dealList = DealModel::where($map)->order('create_time', 'desc')->paginate(10);
+        // 获取数据---paginate:控制每页多少个
+        $dealList = DealModel::where($map)->order('create_time', 'desc')->paginate(4);
         // 模板赋值
         $this->view->assign('dealList', $dealList);
         $this->view->assign('status', $status);
         $this->view->assign('empty', "<h3 class='text-center text-danger'>没有用户数据</h3>");
 
-        return $this->view->fetch('tradeList', ['title' => '交易列表']);
+        return $this->view->fetch('tradeList_Test', ['title' => '交易列表']);
     }
 
     // 用户个人交易评论

@@ -14,6 +14,9 @@ use app\common\model\Site as SiteModel;
 use app\common\model\Notice as NoticeModel;
 use think\facade\Session;
 
+
+
+//----------------获取数据库数据方法：在控制器中使用模型/Goods 的 get()方法---------------------
 class Index extends Base
 {
     // 验证器
@@ -22,11 +25,14 @@ class Index extends Base
     public function index()
     {
         $goodsAllArray = [];
+
+//        数据库查询各式
         $typeList = GoodsType::field('id, name')->where('status', '=', 1)->select();
         for ($i = 0; $i < count($typeList); $i++) {
             $result = Goods::field('id, name, score, image, user_id, price')
                 ->where([
                     ['status', '=', 1],
+//                    type_id？？
                     ['type_id', '=', $typeList[$i]['id']],
                 ])
                 ->order('pv', 'DESC')
@@ -36,20 +42,27 @@ class Index extends Base
                 'type_id' => $typeList[$i]['id'],
                 'goods_list' => $result
             ];
+//            def:array_unshift($param,$arr) $param will be show in the first index in arr[]
             array_unshift($goodsAllArray, $goodsItemArray);
         }
+//        站点访问数增加？
         SiteModel::where('id', '=', '1')->setInc('visit_num');
+//        为什么assign？
         $this->view->assign('typeList', $typeList);
         $this->view->assign('goodsAllArray', $goodsAllArray);
         $this->view->assign('empty', "<h3 class='text-center text-danger'>没有数据</h3>");
         return $this->view->fetch('index', ['title' => '首页']);
     }
 
-    // 种类对应的物品列表
+    // 种类对应的详细物品列表
     public function typeList()
     {
+//        why init like this?
         $map[] = ['status', '=', 1];
+//        $data?
         $data = Request::param();
+//        isset自身表示变量存在且不空时，返回true,写这个是否多余了呢？
+//        id和 关键字只要一个不为空，都能查出
         if(isset($data['keywords']) && '' != $data['keywords']) {
             $map[] = ['name', 'like', '%'.$data['keywords'].'%'];
             $goodsList = Goods::field('id, name, score, image, user_id, price')
@@ -68,6 +81,7 @@ class Index extends Base
         $typeList = GoodsType::field('id, name')->where('status', '=', 1)->select();
         $this->view->assign('typeList', $typeList);
         $this->view->assign('goodsList', $goodsList);
+//        goodList在这里的作用怎么体现出来？
         return $this->view->fetch('typeList', ['title'=>'物品列表']);
     }
 
@@ -82,6 +96,7 @@ class Index extends Base
         if (!isset($id) || '' == $id) {
             $this->error('请求类型错误', 'index/index');
         }
+//        why?
         $goodsInfo = Goods::get(function ($query) use ($id) {
             $query->where([
                     ['id', '=', $id],
@@ -91,6 +106,7 @@ class Index extends Base
         $scoreAndNum = $this->getScoreAndNum($id);
         $commentList = $this->getCommentNum($level, $id);
         $typeList = GoodsType::field('id, name')->where('status', '=', 1)->select();
+//此处的assign,特别是empty这个，作用过程没看懂
         $this->view->assign('empty', "<div class='text-danger'>还没有评论信息</div>");
         $this->view->assign('scoreAndNum', $scoreAndNum);
         $this->view->assign('typeList', $typeList);
@@ -116,6 +132,7 @@ class Index extends Base
     // 获取评论数
     public function getCommentNum($level, $id)
     {
+//        ==-1是啥意思？没有评论数？
         if ($level == -1) {
             $commentList = CommentModel::field('user_id, comment_level, content')
             ->where([
@@ -137,13 +154,16 @@ class Index extends Base
     // 获得公告
     public function getNotice()
     {
+//        has:判断是否已被赋值
         if (Session::has('is_first_visit')) { // 不是第一次访问
             return json(['status' => -1]);
+//            返回这个干啥？
         }
         // 第一次访问
         Session::set('is_first_visit', 1);
         $notice = NoticeModel::field('name, content')->where('status', '=', 1)->find();
         if (!is_null($notice)) {
+//            查询到有时，返回查询结果
             return json(['status' => 1, 'notice' => $notice]);
         }
     }
@@ -151,9 +171,13 @@ class Index extends Base
     // 物品收藏
     public function saveGoods()
     {
+//        这是啥写法？
+//        1.设置验证规则
+
         $this->validate = new GoodsSaveValidate();
         $this->isUserLogined();
         $data = Request::param();
+
         if (Session::has('user_id')) {
             $userId = Session::get('user_id'); // 获取用户id
         }
@@ -162,15 +186,23 @@ class Index extends Base
         if (!$rs) {
             return json(['status' => -1, 'msg' => $this->validate->getError()]);
         }
+//        物品为自己上架的
         if ($userId == $data['rent_id']) {
             return json(['status' => -1, 'msg' => '你不能收藏自己的物品哦']);
         }
+
         $res = GoodsSaveModel::field('goods_id')->where('goods_id', '=', $data['goods_id'])->find();
         if ($res['goods_id']) {
             return json(['status' => -1, 'msg' => '你已经收藏这件物品啦']);
         }
+//        黑名单内：
         $this->is_black_user($data['lend_id']);
+
+//        这里if内是什么意思呢？
+//        创建收藏？
         if (GoodsSaveModel::create($data)) {
+//            测试语句
+//            echo("<script>console.log('".json_encode($data)."');</script>");
             return json(['status' => 1, 'msg' => '收藏这件物品成功']);
         } else {
             return json(['status' => -1, 'msg' => '收藏这件物品失败，请重试']);

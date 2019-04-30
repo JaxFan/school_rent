@@ -9,7 +9,7 @@
 namespace app\common\validate;
 
 use think\Validate;
-
+//货物收藏验证规则
 class GoodsSave extends Validate
 {
     protected $rule = [

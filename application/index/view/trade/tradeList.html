@@ -6,10 +6,10 @@
     <form class="form-inline" style="display: inline-block; margin-left: 20px;" method="post" action="{:url('trade/goTradeList')}">
         <div class="form-group">
             <select name="status" class="form-control">
-                <option value="" {eq name="status" value=""}selected{/eq}>选择交易状态</option>
-                <option value="1" {eq name="status" value="1"}selected{/eq}>已完成</option>
-                <option value="0" {eq name="status" value="0"}selected{/eq}>正在进行中</option>
-                <option value="-1" {eq name="status" value="-1"}selected{/eq}>失败</option>
+                <option value=""> {eq name="status" value=""}selected{/eq}>选择交易状态</option>
+                <option value="1"> {eq name="status" value="1"}selected{/eq}>已完成</option>
+                <option value="0" >{eq name="status" value="0"}selected{/eq}>正在进行中</option>
+                <option value="-1" >{eq name="status" value="-1"}selected{/eq}>失败</option>
             </select>
             <button type="submit" class="btn btn-default btn-primary">查询</button>
         </div>
@@ -26,7 +26,7 @@
         <td>花费</td>
         <td>提供人</td>
         <td>交易状态</td>
-        <td colspan="2">操作</td>
+        <td colspan="3">操作</td>
     </tr>
     {volist name="dealList" id="item"}
     <tr>
@@ -154,7 +154,7 @@
     </div>
 </div>
 
-<!-- 警告框 -->
+ 警告框
 <div class="alert fade" style="z-index: 3; position: fixed; top: 200px; left: 50%; width: 400px; margin-left: -200px">
     <div class="alertMsg text-center"></div>
 </div>
@@ -175,18 +175,18 @@
     }
 
     $(function () {
-        
+
         $('.Btn').on('mouseover', function () {
             $(this).popover('show')
         })
         $('.Btn').on('mouseout', function () {
             $(this).popover('hide')
         })
-        
+
         $('.feedback').on('click', function () {
             $('#feedbackModal').modal('show')
         })
-        
+
         $('#sbumitBtn').on('click', function () {
             $('#feedbackModal').modal('hide')
             $.ajax({

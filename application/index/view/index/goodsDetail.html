@@ -61,7 +61,7 @@
             <div class="my_search">
                 <form class="my_search_input" action="{:url('index/typeList')}" method="get">
                     <input type="text" name="keywords" placeholder="搜索商品名">
-                    <button type="submit"><i class="iconfont icon-fangdajing"></i></button>
+                    <button type="submit" style="width: 45px; height: 30px;"><i class="iconfont icon-fangdajing"></i></button>
                 </form>
             </div>
             <ul class="my_login">
@@ -83,7 +83,7 @@
         <ul class="my_sub_nav">
             {volist name="typeList" id="typeItem"}
             <li>
-                <a href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="text-decoration: none"
+                <a href="{:url('index/typeList', ['id'=>$typeItem.id, 'name'=>$typeItem.name])}" style="text-decoration: none">
                    {eq name="typeItem.id" value="$Request.param.id"}class="my_sub_nav_active"{/eq}
                 >{$typeItem.name}</a>
             </li>
@@ -122,6 +122,7 @@
         </div>
     </div>
 </section>
+
 <!--物品租凭详情-->
 <section class="sec4">
     <div class="sec44">
@@ -169,7 +170,7 @@
                             <p class="jiagezi">租凭时长：</p>
                         </td>
                         <td>
-                            <select class="xuanxiangkuang" name="tianshu" id="tianshu"
+                            <select class="xuanxiangkuang" name="tianshu" id="tianshu">
                                 {eq name="goodsInfo.lend_total" value="0"}
                                     disabled
                                     title="因该商品已经被租赁完，暂不能选择租赁时长"
@@ -189,7 +190,7 @@
                             <p class="jiagezi">配送方式：</p>
                         </td>
                         <td>
-                            <select class="xuanxiangkuang2"
+                            <select class="xuanxiangkuang2">
                                 {eq name="goodsInfo.lend_total" value="0"}
                                     disabled
                                     title="因该商品已经被租赁完，暂不能选择配送方式"
@@ -239,6 +240,13 @@
     </div>
     <div style="clear: both"></div>
 </section>
+<!--导航标签-->
+<section class="dh-m">
+	<div>
+		<div class="dh-m-1">租赁物品描述</div>
+		<div style="border: 2px solid #27faf3;width: 100%;"></div>
+	</div>
+</section>
 <section class="my_sec4">
     <div class="my_sec44">
         <h3 class="goods_intr_title">租赁物品描述</h3>
@@ -272,6 +280,7 @@
                 </ul>
             </div>
         </div>
+        <!--这儿就是接受index-goodsdetail的数据吧-->
         {include file="public:commentList"}
     </div>
     <div class="score_box">

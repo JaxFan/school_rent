@@ -83,9 +83,10 @@ info;
         }
     }
 
-    // 黑名单用户不能登录
+    // 黑名单blacklist用户不能登录
     public function is_black_user($id)
     {
+//        数据库查找方式
         $status = Db::table('platform_user')->where([
             ['id', '=', $id]
         ])->value('status');
